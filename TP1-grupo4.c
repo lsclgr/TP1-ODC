@@ -16,7 +16,7 @@ void machine(Instruction *instructions, int *RAM);
 void interpretedMachine(Instruction inst, int *RAM);
 Instruction *toCompile(Instruction *instructions);
 void createProgramMultiply(int multiplicand, int multiplier, int *RAM);
-void createProgramDivide(int dividend, int divisor);
+void createProgramDivide(int dividend, int divisor, int *RAM);
 
 int main() {
     srand(time(NULL));
@@ -26,6 +26,7 @@ int main() {
     createRAM(RAM);
     createRandomInstructions(RAM);
     createProgramMultiply(400, 3, RAM);
+    createProgramDivide(12, 3, RAM);
 
     return 0;
 }
@@ -179,4 +180,107 @@ void createProgramMultiply(int multiplicand, int multiplier, int *RAM) {
     machine(multiplyInstructions, RAM);
 }
 
-void createProgramDivide(int dividend, int divisor) {}
+void createProgramDivide(int dividend, int divisor, int *RAM) {
+    // 0 => somar
+    // 1 => sub
+    // 2 => levar para memoriaDados
+    // 3 => trazer da memoriaDados
+    //-1 => halt
+
+    // 12 / 3 = (12-3); (9-3); (6-3); (3-3); (0-3) => 4
+    // 15 / 4 = (15-4); (11-4); (7-4); (3-4) => 3
+
+    // monto um programa apenas para levar os dados para RAM
+    Instruction *divInstructions = malloc(5 * sizeof(Instruction));
+
+    Instruction inst;
+    inst.opCode = 2;
+    inst.addressOne = dividend;
+    inst.addressTwo = 0;
+    inst.addressThree = -1;
+    divInstructions[0] = inst;
+    // memoriaDados[0] = divisor
+
+    inst.opCode = 2;
+    inst.addressOne = divisor;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    divInstructions[1] = inst;
+    // memoriaDados[1] = dividendo
+
+    inst.opCode = 2;
+    inst.addressOne = 1;
+    inst.addressTwo = 2;
+    inst.addressThree = -1;
+    divInstructions[2] = inst;
+    // memoriaDados[2] = 1
+    // representa uma variável de incremento
+
+    inst.opCode = 2;
+    inst.addressOne = 0;
+    inst.addressTwo = 3;
+    inst.addressThree = -1;
+    divInstructions[3] = inst;
+    // memoriaDados[3] = 0
+    // representa quantas subtra��es foram feitas
+    // representa o resultado da divis�o
+
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    divInstructions[4] = inst;
+
+    machine(divInstructions, RAM);
+
+    // trazer da memoriaDados[0]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 0;
+    inst.addressThree = -1;
+    interpretedMachine(inst, RAM);
+    dividend = RAM[inst.addressTwo];
+
+    // trazer da memoriaDados[1]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(inst, RAM);
+    divisor = RAM[inst.addressTwo];
+
+    // 12 / 3 = (12-3); (9-3); (6-3); (3-3); (0-3) => 4
+    // 15 / 4 = (15-4); (11-4); (7-4); (3-4) => 3
+
+    while (dividend >= divisor) {
+        // subtrair
+        inst.opCode = 1;
+        inst.addressOne = 0;
+        inst.addressTwo = 1;
+        inst.addressThree = 0;
+        interpretedMachine(inst, RAM);
+
+        // somar
+        inst.opCode = 0;
+        inst.addressOne = 2;
+        inst.addressTwo = 3;
+        inst.addressThree = 3;
+        interpretedMachine(inst, RAM);
+
+        // trazer da memoriaDados[0]
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 0;
+        inst.addressThree = -1;
+        interpretedMachine(inst, RAM);
+        dividend = RAM[inst.addressTwo];
+
+        // trazer da memoriaDados[1]
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 1;
+        inst.addressThree = -1;
+        interpretedMachine(inst, RAM);
+        divisor = RAM[inst.addressTwo];
+    }
+}
