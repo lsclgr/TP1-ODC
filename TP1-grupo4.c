@@ -15,9 +15,9 @@ void createRandomInstructions(int* RAM);
 void machine(Instruction* instructions, int* RAM);
 void interpretedMachine(Instruction* inst, int* RAM);
 Instruction* toCompile(Instruction* instructions);
-void createProgramMultiply(int multiplicand, int multiplier, int* RAM);
-void createProgramDivide(int dividend, int divisor, int* RAM);
-void createProgramExponential(int base, int exponent, int* RAM);
+int createProgramMultiply(int multiplicand, int multiplier, int* RAM);
+int createProgramDivide(int dividend, int divisor, int* RAM);
+int createProgramExponential(int base, int exponent, int* RAM);
 
 int main() {
     srand(time(NULL));
@@ -25,9 +25,10 @@ int main() {
     RAM = createRAM(RAM);
 
     createRAM(RAM);
-    createRandomInstructions(RAM);
-    createProgramMultiply(400, 3, RAM);
-    createProgramDivide(12, 3, RAM);
+    //createRandomInstructions(RAM);
+    int x = createProgramMultiply(400, 3, RAM);
+    int y = createProgramDivide(12, 3, RAM);
+    int z = createProgramExponential(2, 4, RAM);
 
     return 0;
 }
@@ -134,7 +135,7 @@ void interpretedMachine(Instruction* inst, int* RAM) {
     }
 }
 
-void createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
+int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     // 0 => somar
     // 1 => sub
     // 2 => levar para memoriaDados
@@ -144,8 +145,7 @@ void createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     // 3 x 400 = 3 + 3 + 3 + 3 + .... + 3 => 400 vezes
     // opcode | add1 | add2 | add3
 
-    Instruction* multiplyInstructions =
-        malloc((multiplier + 3) * sizeof(Instruction));
+    Instruction* multiplyInstructions = malloc((multiplier + 3) * sizeof(Instruction));
 
     Instruction inst;
 
@@ -177,9 +177,21 @@ void createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     multiplyInstructions[multiplier + 2] = inst;
 
     machine(multiplyInstructions, RAM);
+
+    // trazer da RAM[1]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    int result = inst.addressOne;
+
+    printf("\nO resultado da multiplicação de %d por %d é: %d\n\n", multiplicand, multiplier, result);
+
+    return result;
 }
 
-void createProgramDivide(int dividend, int divisor, int* RAM) {
+int createProgramDivide(int dividend, int divisor, int* RAM) {
     // 0 => somar
     // 1 => sub
     // 2 => levar para memoriaDados
@@ -246,7 +258,7 @@ void createProgramDivide(int dividend, int divisor, int* RAM) {
     inst.addressTwo = 1;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    divisor = inst.addressOne;  
+    divisor = inst.addressOne;
 
     // 12 / 3 = (12-3); (9-3); (6-3); (3-3); (0-3) => 4
     // 15 / 4 = (15-4); (11-4); (7-4); (3-4) => 3
@@ -274,7 +286,60 @@ void createProgramDivide(int dividend, int divisor, int* RAM) {
         interpretedMachine(&inst, RAM);
         dividend = inst.addressOne;
     }
+    // trazer da RAM[3]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 3;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    int result = inst.addressOne;
+
+    printf("\nO resultado da divisão de %d por %d é: %d\n\n", dividend, divisor, result);
+
+    return result;
 }
-void createProgramExponential(int base, int exponent, int* RAM){
-    
+int createProgramExponential(int base, int exponent, int* RAM) {
+    // 0 => somar
+    // 1 => sub
+    // 2 => levar para memoriaDados
+    // 3 => trazer da memoriaDados
+    //-1 => halt
+
+    // 3 x 400 = 3 + 3 + 3 + 3 + .... + 3 => 400 vezes
+    // opcode | add1 | add2 | add3
+
+    Instruction* expInstructions = malloc((exponent + 3) * sizeof(Instruction));
+
+    Instruction inst;
+
+    int result = 1;
+
+    inst.opCode = 2;
+    inst.addressOne = base;
+    inst.addressTwo = 0;
+    inst.addressThree = -1;
+    expInstructions[0] = inst;
+    //base na RAM[0]
+
+
+    for (int i = 2; i < exponent + 2; i++) {
+        result = createProgramMultiply(result, base, RAM);
+        inst.opCode = 2;
+        inst.addressOne = result;
+        inst.addressTwo = 1;
+        inst.addressThree = -1;
+        expInstructions[1] = inst;
+        //resultado na RAM[1]
+    }
+
+    // // inserindo a ultima instrucao do programa que faz o HALT
+    // inst.opCode = -1;
+    // inst.addressOne = -1;
+    // inst.addressTwo = -1;
+    // inst.addressThree = -1;
+    // expInstructions[exponent + 2] = inst;
+
+    printf("\nO resultado de %d elevado a %d é: %d\n\n", base, exponent, result);
+
+    return result;
 }
