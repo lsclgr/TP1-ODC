@@ -17,6 +17,7 @@ void interpretedMachine(Instruction* inst, int* RAM);
 Instruction* toCompile(Instruction* instructions);
 void createProgramMultiply(int multiplicand, int multiplier, int* RAM);
 void createProgramDivide(int dividend, int divisor, int* RAM);
+void createProgramExponential(int base, int exponent, int* RAM);
 
 int main() {
     srand(time(NULL));
@@ -273,4 +274,7 @@ void createProgramDivide(int dividend, int divisor, int* RAM) {
         interpretedMachine(&inst, RAM);
         dividend = inst.addressOne;
     }
+}
+void createProgramExponential(int base, int exponent, int* RAM){
+    
 }
