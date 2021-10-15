@@ -248,16 +248,17 @@ int createProgramSum(int num1, int num2, int* RAM) {
     inst.addressOne = 0;
     inst.addressTwo = 1;
     inst.addressThree = 2;
-    sumInstructions[1] = inst;
+    sumInstructions[2] = inst;
 
     inst.opCode = -1;
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    sumInstructions[1] = inst;
+    sumInstructions[3] = inst;
 
     machine(sumInstructions, RAM);
 
+    //trazer da RAM[2]
     inst.opCode = 3;
     inst.addressOne = -1;
     inst.addressTwo = 2;
@@ -284,17 +285,18 @@ int createProgramSub(int num1, int num2, int* RAM) {
     inst.addressThree = -1;
     subInstructions[1] = inst;
 
+
     inst.opCode = 1;
     inst.addressOne = 0;
     inst.addressTwo = 1;
     inst.addressThree = 2;
-    subInstructions[1] = inst;
+    subInstructions[2] = inst;
 
     inst.opCode = -1;
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    subInstructions[1] = inst;
+    subInstructions[3] = inst;
 
     machine(subInstructions, RAM);
 
