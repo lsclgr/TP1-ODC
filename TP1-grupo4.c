@@ -409,7 +409,7 @@ int createProgramDelta(int a, int b, int c, int* RAM) {
     deltaInstructions[8] = inst;
     //subtraindo b²-(4ac)
 
-    // trazer da RAM[16]
+    // trazer da RAM[]
     inst.opCode = 3;
     inst.addressOne = -1;
     inst.addressTwo = 16;
