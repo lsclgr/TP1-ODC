@@ -337,7 +337,18 @@ int createProgramExponential(int base, int exponent, int* RAM) {
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    expInstructions[exponent + 2] = inst;
+    expInstructions[exponent + 1] = inst;
+
+    machine(expInstructions, RAM);
+
+
+    // trazer da RAM[1]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    result = inst.addressOne;
 
     printf("\nO resultado de %d elevado a %d é: %d\n\n", base, exponent, result);
 
@@ -354,7 +365,7 @@ int createProgramDelta(int a, int b, int c, int* RAM) {
         // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
         // opcode | add1 | add2 | add3
 
-    Instruction* deltaInstructions = malloc((11) * sizeof(Instruction));
+    Instruction* deltaInstructions = malloc((10) * sizeof(Instruction));
 
     Instruction inst;
 
@@ -403,28 +414,28 @@ int createProgramDelta(int a, int b, int c, int* RAM) {
     //4xaxc na RAM[5]
 
     inst.opCode = 1;
-    inst.addressOne = deltaInstructions[3].addressOne;
-    inst.addressTwo = deltaInstructions[5].addressOne;
+    inst.addressOne = 13;
+    inst.addressTwo = 14;
     inst.addressThree = 15;
     deltaInstructions[8] = inst;
     //subtraindo b²-(4ac)
-
-    // trazer da RAM[15]
-    inst.opCode = 3;
-    inst.addressOne = -1;
-    inst.addressTwo = 15;
-    inst.addressThree = -1;
-    deltaInstructions[9] = inst;
-    result = inst.addressOne;
 
     // inserindo a ultima instrucao do programa que faz o HALT
     inst.opCode = -1;
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    deltaInstructions[10] = inst;
+    deltaInstructions[9] = inst;
 
     machine(deltaInstructions, RAM);
+
+    // trazer da RAM[15]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 15;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    result = inst.addressOne;
 
     printf("\nO resultado de delta é: %d\n\n", result);
     return result;
