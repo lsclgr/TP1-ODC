@@ -18,6 +18,7 @@ Instruction* toCompile(Instruction* instructions);
 int createProgramMultiply(int multiplicand, int multiplier, int* RAM);
 int createProgramDivide(int dividend, int divisor, int* RAM);
 int createProgramExponential(int base, int exponent, int* RAM);
+int createProgramDelta(int a, int b, int c, int* RAM);
 
 int main() {
     srand(time(NULL));
@@ -29,6 +30,10 @@ int main() {
     int x = createProgramMultiply(400, 3, RAM);
     int y = createProgramDivide(12, 3, RAM);
     int z = createProgramExponential(2, 4, RAM);
+    int delta = createProgramDelta(1, 5, 0, RAM);
+
+    x = y = z = delta;
+    y = x;
 
     return 0;
 }
@@ -127,7 +132,7 @@ void interpretedMachine(Instruction* inst, int* RAM) {
         RAM[add] = content;
         break;
     }
-          // trazer da memoriaDados
+          // trazer da RAM
     case 3: {
         inst->addressOne = RAM[inst->addressTwo];
         break;
@@ -299,16 +304,11 @@ int createProgramDivide(int dividend, int divisor, int* RAM) {
     return result;
 }
 int createProgramExponential(int base, int exponent, int* RAM) {
-    // 0 => somar
-    // 1 => sub
-    // 2 => levar para memoriaDados
-    // 3 => trazer da memoriaDados
-    //-1 => halt
 
-    // 3 x 400 = 3 + 3 + 3 + 3 + .... + 3 => 400 vezes
+    // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
     // opcode | add1 | add2 | add3
 
-    Instruction* expInstructions = malloc((exponent + 3) * sizeof(Instruction));
+    Instruction* expInstructions = malloc((exponent + 2) * sizeof(Instruction));
 
     Instruction inst;
 
@@ -322,7 +322,7 @@ int createProgramExponential(int base, int exponent, int* RAM) {
     //base na RAM[0]
 
 
-    for (int i = 2; i < exponent + 2; i++) {
+    for (int i = 1; i < exponent + 1; i++) {
         result = createProgramMultiply(result, base, RAM);
         inst.opCode = 2;
         inst.addressOne = result;
@@ -332,14 +332,100 @@ int createProgramExponential(int base, int exponent, int* RAM) {
         //resultado na RAM[1]
     }
 
-    // // inserindo a ultima instrucao do programa que faz o HALT
-    // inst.opCode = -1;
-    // inst.addressOne = -1;
-    // inst.addressTwo = -1;
-    // inst.addressThree = -1;
-    // expInstructions[exponent + 2] = inst;
+    // inserindo a ultima instrucao do programa que faz o HALT
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    expInstructions[exponent + 2] = inst;
 
     printf("\nO resultado de %d elevado a %d é: %d\n\n", base, exponent, result);
 
+    return result;
+}
+
+int createProgramDelta(int a, int b, int c, int* RAM) {
+    // 0 => somar
+        // 1 => sub
+        // 2 => levar para memoriaDados
+        // 3 => trazer da memoriaDados
+        //-1 => halt
+
+        // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
+        // opcode | add1 | add2 | add3
+
+    Instruction* deltaInstructions = malloc((11) * sizeof(Instruction));
+
+    Instruction inst;
+
+    int result = 0;
+
+    inst.opCode = 2;
+    inst.addressOne = a;
+    inst.addressTwo = 10;
+    inst.addressThree = -1;
+    deltaInstructions[0] = inst;
+    //a na RAM[0]
+
+    inst.opCode = 2;
+    inst.addressOne = b;
+    inst.addressTwo = 11;
+    inst.addressThree = -1;
+    deltaInstructions[1] = inst;
+    //b na RAM[1]
+
+    inst.opCode = 2;
+    inst.addressOne = c;
+    inst.addressTwo = 12;
+    inst.addressThree = -1;
+    deltaInstructions[2] = inst;
+    //c na RAM[2]
+
+    inst.opCode = 2;
+    inst.addressOne = createProgramExponential(b, 2, RAM);
+    inst.addressTwo = 13;
+    inst.addressThree = -1;
+    deltaInstructions[3] = inst;
+    //b² na RAM[3]
+
+    inst.opCode = 2;
+    inst.addressOne = createProgramMultiply(4, a, RAM);
+    inst.addressTwo = 14;
+    inst.addressThree = -1;
+    deltaInstructions[4] = inst;
+    //4xa na RAM[4]
+
+    inst.opCode = 2;
+    inst.addressOne = createProgramMultiply(deltaInstructions[4].addressOne, c, RAM);
+    inst.addressTwo = 14;
+    inst.addressThree = -1;
+    deltaInstructions[5] = inst;
+    //4xaxc na RAM[5]
+
+    inst.opCode = 1;
+    inst.addressOne = deltaInstructions[3].addressOne;
+    inst.addressTwo = deltaInstructions[5].addressOne;
+    inst.addressThree = 15;
+    deltaInstructions[8] = inst;
+    //subtraindo b²-(4ac)
+
+    // trazer da RAM[16]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 16;
+    inst.addressThree = -1;
+    deltaInstructions[9] = inst;
+    result = inst.addressOne;
+
+    // inserindo a ultima instrucao do programa que faz o HALT
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    deltaInstructions[10] = inst;
+
+    machine(deltaInstructions, RAM);
+
+    printf("\nO resultado de delta é: %d\n\n", result);
     return result;
 }
