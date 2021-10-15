@@ -15,6 +15,8 @@ void createRandomInstructions(int* RAM);
 void machine(Instruction* instructions, int* RAM);
 void interpretedMachine(Instruction* inst, int* RAM);
 Instruction* toCompile(Instruction* instructions);
+int createProgramSum(int num1, int num2, int* RAM);
+int createProgramSub(int num1, int num2, int* RAM);
 int createProgramMultiply(int multiplicand, int multiplier, int* RAM);
 int createProgramDivide(int dividend, int divisor, int* RAM);
 int createProgramExponential(int base, int exponent, int* RAM);
@@ -22,18 +24,103 @@ int createProgramDelta(int a, int b, int c, int* RAM);
 
 int main() {
     srand(time(NULL));
-    int* RAM = NULL;
+    int* RAM = NULL, op = 0, num1, num2, num3;
     RAM = createRAM(RAM);
 
     createRAM(RAM);
     //createRandomInstructions(RAM);
-    int x = createProgramMultiply(400, 3, RAM);
-    int y = createProgramDivide(12, 3, RAM);
-    int z = createProgramExponential(2, 4, RAM);
-    int delta = createProgramDelta(1, 5, 0, RAM);
 
-    x = y = z = delta;
-    y = x;
+    printf("Escolha a opção:\n"
+        "1 - Soma\n"
+        "2 - Subtração\n"
+        "3 - Multiplicação\n"
+        "4 - Divisão\n"
+        "5 - Exponencial\n"
+        "6 - Delta\n");
+    scanf("%d", &op);
+
+    switch (op)
+    {
+    case 1:
+        printf("Informe o primeiro valor: ");
+        scanf("%d", &num1);
+
+        printf("Informe o segundo valor: ");
+        scanf("%d", &num2);
+
+        int sum = createProgramSum(num1, num2, RAM);
+
+        printf("\nO resultado da soma de %d e %d é: %d\n\n", num1, num2, sum);
+
+        break;
+    case 2:
+        printf("Informe o primeiro valor: ");
+        scanf("%d", &num1);
+
+        printf("Informe o segundo valor: ");
+        scanf("%d", &num2);
+
+        int sub = createProgramSub(num1, num2, RAM);
+
+        printf("\nO resultado da subtração de %d e %d é: %d\n\n", num1, num2, sub);
+
+        break;
+
+    case 3:
+        printf("Informe o multiplicando: ");
+        scanf("%d", &num1);
+
+        printf("Informe o multiplicador: ");
+        scanf("%d", &num2);
+
+        int multiply = createProgramMultiply(num1, num2, RAM);
+
+        printf("\nO resultado da multiplicação de %d e %d é: %d\n\n", num1, num2, multiply);
+        break;
+
+    case 4:
+        printf("Informe o dividendo: ");
+        scanf("%d", &num1);
+
+        printf("Informe o divisor: ");
+        scanf("%d", &num2);
+
+        int divide = createProgramDivide(num1, num2, RAM);
+
+        printf("\nO resultado da divisão de %d por %d é: %d\n\n", num1, num2, divide);
+
+        break;
+
+    case 5:
+        printf("Informe a base: ");
+        scanf("%d", &num1);
+
+        printf("Informe o expoente: ");
+        scanf("%d", &num2);
+
+        int exp = createProgramExponential(num1, num2, RAM);
+
+        printf("\nO resultado de %d elevado a %d é: %d\n\n", num1, num2, exp);
+        break;
+
+    case 6:
+        printf("Informe o valor de A: ");
+        scanf("%d", &num1);
+
+        printf("Informe o valor de B: ");
+        scanf("%d", &num2);
+
+        printf("Informe o valor de C: ");
+        scanf("%d", &num3);
+
+        int delta = createProgramDelta(num1, num2, num3, RAM);
+
+        printf("\nO resultado de delta é: %d\n\n", delta);
+        break;
+
+    default:
+        break;
+    }
 
     return 0;
 }
@@ -140,6 +227,85 @@ void interpretedMachine(Instruction* inst, int* RAM) {
     }
 }
 
+int createProgramSum(int num1, int num2, int* RAM) {
+    Instruction* sumInstructions = malloc((4) * sizeof(Instruction));
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = num1;
+    inst.addressTwo = 0;
+    inst.addressThree = -1;
+    sumInstructions[0] = inst;
+
+    inst.opCode = 2;
+    inst.addressOne = num2;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    sumInstructions[1] = inst;
+
+    inst.opCode = 0;
+    inst.addressOne = 0;
+    inst.addressTwo = 1;
+    inst.addressThree = 2;
+    sumInstructions[1] = inst;
+
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    sumInstructions[1] = inst;
+
+    machine(sumInstructions, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 2;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    return inst.addressOne;
+
+}
+
+int createProgramSub(int num1, int num2, int* RAM) {
+    Instruction* subInstructions = malloc((4) * sizeof(Instruction));
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = num1;
+    inst.addressTwo = 0;
+    inst.addressThree = -1;
+    subInstructions[0] = inst;
+
+    inst.opCode = 2;
+    inst.addressOne = num2;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    subInstructions[1] = inst;
+
+    inst.opCode = 1;
+    inst.addressOne = 0;
+    inst.addressTwo = 1;
+    inst.addressThree = 2;
+    subInstructions[1] = inst;
+
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    subInstructions[1] = inst;
+
+    machine(subInstructions, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 2;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    return inst.addressOne;
+}
+
 int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     // 0 => somar
     // 1 => sub
@@ -189,11 +355,7 @@ int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     inst.addressTwo = 1;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    int result = inst.addressOne;
-
-    printf("\nO resultado da multiplicação de %d por %d é: %d\n\n", multiplicand, multiplier, result);
-
-    return result;
+    return inst.addressOne;
 }
 
 int createProgramDivide(int dividend, int divisor, int* RAM) {
@@ -348,11 +510,9 @@ int createProgramExponential(int base, int exponent, int* RAM) {
     inst.addressTwo = 1;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    result = inst.addressOne;
 
-    printf("\nO resultado de %d elevado a %d é: %d\n\n", base, exponent, result);
+    return inst.addressOne;
 
-    return result;
 }
 
 int createProgramDelta(int a, int b, int c, int* RAM) {
@@ -368,8 +528,6 @@ int createProgramDelta(int a, int b, int c, int* RAM) {
     Instruction* deltaInstructions = malloc((10) * sizeof(Instruction));
 
     Instruction inst;
-
-    int result = 0;
 
     inst.opCode = 2;
     inst.addressOne = a;
@@ -435,8 +593,5 @@ int createProgramDelta(int a, int b, int c, int* RAM) {
     inst.addressTwo = 15;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    result = inst.addressOne;
-
-    printf("\nO resultado de delta é: %d\n\n", result);
-    return result;
+    return inst.addressOne;
 }
