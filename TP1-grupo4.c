@@ -121,7 +121,6 @@ int main() {
     default:
         break;
     }
-    printf("Te amo\n");
     return 0;
 }
 
