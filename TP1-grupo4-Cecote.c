@@ -20,6 +20,7 @@ int createProgramSub(int num1, int num2, int* RAM);
 int createProgramMultiply(int multiplicand, int multiplier, int* RAM);
 int createProgramDivide(int dividend, int divisor, int* RAM);
 int createProgramExponential(int base, int exponent, int* RAM);
+int createProgramFactorial(int number, int* RAM);
 int createProgramDelta(int a, int b, int c, int* RAM);
 
 int main() {
@@ -36,7 +37,8 @@ int main() {
         "3 - Multiplicação\n"
         "4 - Divisão\n"
         "5 - Exponencial\n"
-        "6 - Delta\n");
+        "6 - Delta\n"
+        "8 - Fatorial\n");
     scanf("%d", &op);
 
     switch (op)
@@ -116,6 +118,15 @@ int main() {
         int delta = createProgramDelta(num1, num2, num3, RAM);
 
         printf("\nO resultado de delta é: %d\n\n", delta);
+        break;
+
+    case 8:
+        printf("Informe o número que você deseja saber o fatorial: ");
+        scanf("%d", &num1);
+
+        int fact = createProgramFactorial(num1, RAM);
+
+        printf("\n%d! é: %d\n\n  ,num1, fact);
         break;
 
     default:
@@ -595,4 +606,8 @@ int createProgramDelta(int a, int b, int c, int* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     return inst.addressOne;
+}
+
+createProgramFactorial(int number, int* RAM) {
+
 }

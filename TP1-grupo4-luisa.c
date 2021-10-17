@@ -20,6 +20,7 @@ void createProgramSub(double num1, double num2, double* RAM);
 void createProgramMultiply(double multiplicand, double multiplier, double* RAM);
 void createProgramDivide(double dividend, double divisor, double* RAM);
 void createProgramExponential(double base, double exponent, double* RAM);
+void createProgramFactorial(double number, double* RAM);
 void createProgramDelta(double a, double b, double c, double* RAM);
 
 int main() {
@@ -38,7 +39,8 @@ int main() {
         "3 - Multiplicação\n"
         "4 - Divisão\n"
         "5 - Exponencial\n"
-        "6 - Delta\n");
+        "6 - Delta\n"
+        "8 - Fatorial\n");
     scanf("%d", &op);
 
     switch (op)
@@ -52,15 +54,6 @@ int main() {
 
         createProgramSum(num1, num2, RAM);
 
-        //trazer da RAM[2]
-        inst.opCode = 3;
-        inst.addressOne = -1;
-        inst.addressTwo = 2;
-        inst.addressThree = -1;
-        interpretedMachine(&inst, RAM);
-
-        printf("\nO resultado da soma de %lf e %lf é: %lf\n\n", num1, num2, sum);
-
         break;
     case 2:
         printf("Informe o primeiro valor: ");
@@ -70,8 +63,6 @@ int main() {
         scanf("%lf", &num2);
 
         createProgramSub(num1, num2, RAM);
-
-        printf("\nO resultado da subtração de %lf e %lf é: %lf\n\n", num1, num2, sub);
 
         break;
 
@@ -84,7 +75,6 @@ int main() {
 
         createProgramMultiply(num1, num2, RAM);
 
-        printf("\nO resultado da multiplicação de %lf e %lf é: %lf\n\n", num1, num2, multiply);
         break;
 
     case 4:
@@ -95,8 +85,6 @@ int main() {
         scanf("%lf", &num2);
 
         createProgramDivide(num1, num2, RAM);
-
-        printf("\nO resultado da divisão de %lf por %lf é: %lf\n\n", num1, num2, divide);
 
         break;
 
@@ -109,7 +97,6 @@ int main() {
 
         createProgramExponential(num1, num2, RAM);
 
-        printf("\nO resultado de %lf elevado a %lf é: %lf\n\n", num1, num2, exp);
         break;
 
     case 6:
@@ -124,7 +111,6 @@ int main() {
 
         createProgramDelta(num1, num2, num3, RAM);
 
-        printf("\nO resultado de delta é: %lf\n\n", delta);
         break;
 
     default:
@@ -222,7 +208,7 @@ void interpretedMachine(Instruction* inst, double* RAM) {
     }
           // levar para RAM
     case 2: {
-        int content = inst->addressOne;
+        double content = inst->addressOne;
         int add = (int)inst->addressTwo;
         RAM[add] = content;
         break;
@@ -272,7 +258,8 @@ void createProgramSum(double num1, double num2, double* RAM) {
     inst.addressTwo = 2;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    return inst.addressOne;
+
+    printf("\nO resultado da soma de %.1lf e %.1lf é: %.1lf\n\n", num1, num2, inst.addressOne);
 
 }
 
@@ -313,7 +300,8 @@ void createProgramSub(double num1, double num2, double* RAM) {
     inst.addressTwo = 2;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    return inst.addressOne;
+
+    printf("\nO resultado da subtração de %.1lf e %.1lf é: %.1lf\n\n", num1, num2, inst.addressOne);
 }
 
 void createProgramMultiply(double multiplicand, double multiplier, double* RAM) {
@@ -365,7 +353,8 @@ void createProgramMultiply(double multiplicand, double multiplier, double* RAM) 
     inst.addressTwo = 1;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    return inst.addressOne;
+
+    printf("\nO resultado da multiplicação de %.2lf e %.2lf é: %.2lf\n\n", multiplicand, multiplier, inst.addressOne);
 }
 
 void createProgramDivide(double dividend, double divisor, double* RAM) {
@@ -469,11 +458,10 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     inst.addressTwo = 3;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    double result = inst.addressOne;
 
-    printf("\nO resultado da divisão de %.1lf por %.1lf é: %.1lf\n\n", dividend, divisor, result);
 
-    return result;
+    printf("\nO resultado da divisão de %.2lf por %.2lf é: %.2lf\n\n", dividend, divisor, inst.addressOne);
+
 }
 void createProgramExponential(double base, double exponent, double* RAM) {
 
@@ -522,7 +510,7 @@ void createProgramExponential(double base, double exponent, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    return inst.addressOne;
+    printf("\nO resultado de %.2lf elevado a %.0lf é: %.2lf\n\n", base, exponent, inst.addressOne);
 
 }
 
@@ -562,21 +550,21 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     //c na RAM[2]
 
     inst.opCode = 2;
-    inst.addressOne = createProgramExponential(b, 2, RAM);
+    //inst.addressOne = createProgramExponential(b, 2, RAM);
     inst.addressTwo = 13;
     inst.addressThree = -1;
     deltaInstructions[3] = inst;
     //b² na RAM[3]
 
     inst.opCode = 2;
-    inst.addressOne = createProgramMultiply(4, a, RAM);
+    //inst.addressOne = createProgramMultiply(4, a, RAM);
     inst.addressTwo = 14;
     inst.addressThree = -1;
     deltaInstructions[4] = inst;
     //4xa na RAM[4]
 
     inst.opCode = 2;
-    inst.addressOne = createProgramMultiply(deltaInstructions[4].addressOne, c, RAM);
+    //inst.addressOne = createProgramMultiply(deltaInstructions[4].addressOne, c, RAM);
     inst.addressTwo = 14;
     inst.addressThree = -1;
     deltaInstructions[5] = inst;
@@ -604,5 +592,6 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressTwo = 15;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    return inst.addressOne;
+
+    printf("\nO resultado de delta é: %.2lf\n\n", inst.addressOne);
 }
