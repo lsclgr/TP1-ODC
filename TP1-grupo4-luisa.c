@@ -5,27 +5,29 @@
 
 typedef struct {
     int opCode;
-    int addressOne;
-    int addressTwo;
-    int addressThree;
+    double addressOne;
+    double addressTwo;
+    double addressThree;
 } Instruction;
 
-int* createRAM(int* RAM);
-void createRandomInstructions(int* RAM);
-void machine(Instruction* instructions, int* RAM);
-void interpretedMachine(Instruction* inst, int* RAM);
+double* createRAM(double* RAM);
+void createRandomInstructions(double* RAM);
+void machine(Instruction* instructions, double* RAM);
+void interpretedMachine(Instruction* inst, double* RAM);
 Instruction* toCompile(Instruction* instructions);
-int createProgramSum(int num1, int num2, int* RAM);
-int createProgramSub(int num1, int num2, int* RAM);
-int createProgramMultiply(int multiplicand, int multiplier, int* RAM);
-int createProgramDivide(int dividend, int divisor, int* RAM);
-int createProgramExponential(int base, int exponent, int* RAM);
-int createProgramDelta(int a, int b, int c, int* RAM);
+void createProgramSum(double num1, double num2, double* RAM);
+void createProgramSub(double num1, double num2, double* RAM);
+void createProgramMultiply(double multiplicand, double multiplier, double* RAM);
+void createProgramDivide(double dividend, double divisor, double* RAM);
+void createProgramExponential(double base, double exponent, double* RAM);
+void createProgramDelta(double a, double b, double c, double* RAM);
 
 int main() {
     srand(time(NULL));
-    int* RAM = NULL, op = 0, num1, num2, num3;
+    int op = 0;
+    double* RAM = NULL, num1, num2, num3;
     RAM = createRAM(RAM);
+    Instruction inst;
 
     createRAM(RAM);
     //createRandomInstructions(RAM);
@@ -43,79 +45,86 @@ int main() {
     {
     case 1:
         printf("Informe o primeiro valor: ");
-        scanf("%d", &num1);
+        scanf("%lf", &num1);
 
         printf("Informe o segundo valor: ");
-        scanf("%d", &num2);
+        scanf("%lf", &num2);
 
-        int sum = createProgramSum(num1, num2, RAM);
+        createProgramSum(num1, num2, RAM);
 
-        printf("\nO resultado da soma de %d e %d é: %d\n\n", num1, num2, sum);
+        //trazer da RAM[2]
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+
+        printf("\nO resultado da soma de %lf e %lf é: %lf\n\n", num1, num2, sum);
 
         break;
     case 2:
         printf("Informe o primeiro valor: ");
-        scanf("%d", &num1);
+        scanf("%lf", &num1);
 
         printf("Informe o segundo valor: ");
-        scanf("%d", &num2);
+        scanf("%lf", &num2);
 
-        int sub = createProgramSub(num1, num2, RAM);
+        createProgramSub(num1, num2, RAM);
 
-        printf("\nO resultado da subtração de %d e %d é: %d\n\n", num1, num2, sub);
+        printf("\nO resultado da subtração de %lf e %lf é: %lf\n\n", num1, num2, sub);
 
         break;
 
     case 3:
         printf("Informe o multiplicando: ");
-        scanf("%d", &num1);
+        scanf("%lf", &num1);
 
         printf("Informe o multiplicador: ");
-        scanf("%d", &num2);
+        scanf("%lf", &num2);
 
-        int multiply = createProgramMultiply(num1, num2, RAM);
+        createProgramMultiply(num1, num2, RAM);
 
-        printf("\nO resultado da multiplicação de %d e %d é: %d\n\n", num1, num2, multiply);
+        printf("\nO resultado da multiplicação de %lf e %lf é: %lf\n\n", num1, num2, multiply);
         break;
 
     case 4:
         printf("Informe o dividendo: ");
-        scanf("%d", &num1);
+        scanf("%lf", &num1);
 
         printf("Informe o divisor: ");
-        scanf("%d", &num2);
+        scanf("%lf", &num2);
 
-        int divide = createProgramDivide(num1, num2, RAM);
+        createProgramDivide(num1, num2, RAM);
 
-        printf("\nO resultado da divisão de %d por %d é: %d\n\n", num1, num2, divide);
+        printf("\nO resultado da divisão de %lf por %lf é: %lf\n\n", num1, num2, divide);
 
         break;
 
     case 5:
         printf("Informe a base: ");
-        scanf("%d", &num1);
+        scanf("%lf", &num1);
 
         printf("Informe o expoente: ");
-        scanf("%d", &num2);
+        scanf("%lf", &num2);
 
-        int exp = createProgramExponential(num1, num2, RAM);
+        createProgramExponential(num1, num2, RAM);
 
-        printf("\nO resultado de %d elevado a %d é: %d\n\n", num1, num2, exp);
+        printf("\nO resultado de %lf elevado a %lf é: %lf\n\n", num1, num2, exp);
         break;
 
     case 6:
         printf("Informe o valor de A: ");
-        scanf("%d", &num1);
+        scanf("%lf", &num1);
 
         printf("Informe o valor de B: ");
-        scanf("%d", &num2);
+        scanf("%lf", &num2);
 
         printf("Informe o valor de C: ");
-        scanf("%d", &num3);
+        scanf("%lf", &num3);
 
-        int delta = createProgramDelta(num1, num2, num3, RAM);
+        createProgramDelta(num1, num2, num3, RAM);
 
-        printf("\nO resultado de delta é: %d\n\n", delta);
+        printf("\nO resultado de delta é: %lf\n\n", delta);
         break;
 
     default:
@@ -124,8 +133,8 @@ int main() {
     return 0;
 }
 
-int* createRAM(int* RAM) {
-    RAM = (int*)malloc(1000 * sizeof(int));
+double* createRAM(double* RAM) {
+    RAM = (double*)malloc(1000 * sizeof(double));
 
     for (int i = 0; i < 1000; i++) {
         RAM[i] = rand() % 100;
@@ -133,7 +142,7 @@ int* createRAM(int* RAM) {
     return RAM;
 }
 
-void createRandomInstructions(int* RAM) {
+void createRandomInstructions(double* RAM) {
     // 01|22|13|45 => isto é uma instrução
     // 00|33|12|01 => isto é outra instrução
 
@@ -164,7 +173,7 @@ Instruction* toCompile(Instruction* instructions) {
     return instructions;
 }
 
-void machine(Instruction* instructions, int* RAM) {
+void machine(Instruction* instructions, double* RAM) {
     Instruction* compiledInstructions = malloc(100 * sizeof(Instruction));
     compiledInstructions = toCompile(instructions);
 
@@ -178,55 +187,55 @@ void machine(Instruction* instructions, int* RAM) {
     }
 }
 
-void interpretedMachine(Instruction* inst, int* RAM) {
+void interpretedMachine(Instruction* inst, double* RAM) {
     int opcode = inst->opCode;
     switch (opcode) {
         // SOMAR
     case 0: {
-        int add1 = inst->addressOne;
-        int add2 = inst->addressTwo;
+        int add1 = (int)inst->addressOne;
+        int add2 = (int)inst->addressTwo;
         // buscar na RAM
-        int contentRAM1 = RAM[add1];
-        int contentRAM2 = RAM[add2];
-        int sum = contentRAM1 + contentRAM2;
+        double contentRAM1 = RAM[add1];
+        double contentRAM2 = RAM[add2];
+        double sum = contentRAM1 + contentRAM2;
         // salvando resultado na RAM
-        int add3 = inst->addressThree;
+        int add3 = (int)inst->addressThree;
         RAM[add3] = sum;
 
-        printf("somando %d com %d e gerando %d!\n", contentRAM1, contentRAM2, sum);
+        printf("somando %.1lf com %.1lf e gerando %.1lf!\n", contentRAM1, contentRAM2, sum);
         break;
     }
           // SUBTRAIR
     case 1: {
-        int add1 = inst->addressOne;
-        int add2 = inst->addressTwo;
+        int add1 = (int)inst->addressOne;
+        int add2 = (int)inst->addressTwo;
         // buscar na RAM
-        int contentRAM1 = RAM[add1];
-        int contentRAM2 = RAM[add2];
-        int sum = contentRAM1 - contentRAM2;
+        double contentRAM1 = RAM[add1];
+        double contentRAM2 = RAM[add2];
+        double sub = contentRAM1 - contentRAM2;
         // salvando resultado na RAM
-        int add3 = inst->addressThree;
-        RAM[add3] = sum;
+        int add3 = (int)inst->addressThree;
+        RAM[add3] = sub;
 
-        printf("subtraindo %d com %d e gerando %d!\n", contentRAM1, contentRAM2, sum);
+        printf("subtraindo %.1lf com %.1lf e gerando %.1lf!\n", contentRAM1, contentRAM2, sub);
         break;
     }
           // levar para RAM
     case 2: {
         int content = inst->addressOne;
-        int add = inst->addressTwo;
+        int add = (int)inst->addressTwo;
         RAM[add] = content;
         break;
     }
           // trazer da RAM
     case 3: {
-        inst->addressOne = RAM[inst->addressTwo];
+        inst->addressOne = RAM[(int)inst->addressTwo];
         break;
     }
     }
 }
 
-int createProgramSum(int num1, int num2, int* RAM) {
+void createProgramSum(double num1, double num2, double* RAM) {
     Instruction* sumInstructions = malloc((4) * sizeof(Instruction));
 
     Instruction inst;
@@ -267,7 +276,7 @@ int createProgramSum(int num1, int num2, int* RAM) {
 
 }
 
-int createProgramSub(int num1, int num2, int* RAM) {
+void createProgramSub(double num1, double num2, double* RAM) {
     Instruction* subInstructions = malloc((4) * sizeof(Instruction));
 
     Instruction inst;
@@ -307,7 +316,7 @@ int createProgramSub(int num1, int num2, int* RAM) {
     return inst.addressOne;
 }
 
-int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
+void createProgramMultiply(double multiplicand, double multiplier, double* RAM) {
     // 0 => somar
     // 1 => sub
     // 2 => levar para memoriaDados
@@ -317,7 +326,7 @@ int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     // 3 x 400 = 3 + 3 + 3 + 3 + .... + 3 => 400 vezes
     // opcode | add1 | add2 | add3
 
-    Instruction* multiplyInstructions = malloc((multiplier + 3) * sizeof(Instruction));
+    Instruction* multiplyInstructions = malloc(((int)multiplier + 3) * sizeof(Instruction));
 
     Instruction inst;
 
@@ -333,7 +342,7 @@ int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     inst.addressThree = -1;
     multiplyInstructions[1] = inst;
 
-    for (int i = 2; i < multiplier + 2; i++) {
+    for (int i = 2; i < (int)multiplier + 2; i++) {
         inst.opCode = 0;
         inst.addressOne = 0;
         inst.addressTwo = 1;
@@ -346,7 +355,7 @@ int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    multiplyInstructions[multiplier + 2] = inst;
+    multiplyInstructions[(int)multiplier + 2] = inst;
 
     machine(multiplyInstructions, RAM);
 
@@ -359,7 +368,7 @@ int createProgramMultiply(int multiplicand, int multiplier, int* RAM) {
     return inst.addressOne;
 }
 
-int createProgramDivide(int dividend, int divisor, int* RAM) {
+void createProgramDivide(double dividend, double divisor, double* RAM) {
     // 0 => somar
     // 1 => sub
     // 2 => levar para memoriaDados
@@ -460,18 +469,18 @@ int createProgramDivide(int dividend, int divisor, int* RAM) {
     inst.addressTwo = 3;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    int result = inst.addressOne;
+    double result = inst.addressOne;
 
-    printf("\nO resultado da divisão de %d por %d é: %d\n\n", dividend, divisor, result);
+    printf("\nO resultado da divisão de %.1lf por %.1lf é: %.1lf\n\n", dividend, divisor, result);
 
     return result;
 }
-int createProgramExponential(int base, int exponent, int* RAM) {
+void createProgramExponential(double base, double exponent, double* RAM) {
 
     // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
     // opcode | add1 | add2 | add3
 
-    Instruction* expInstructions = malloc((exponent + 2) * sizeof(Instruction));
+    Instruction* expInstructions = malloc(((int)exponent + 2) * sizeof(Instruction));
 
     Instruction inst;
 
@@ -486,7 +495,8 @@ int createProgramExponential(int base, int exponent, int* RAM) {
 
 
     for (int i = 1; i < exponent + 1; i++) {
-        result = createProgramMultiply(result, base, RAM);
+        //trazer da ram
+        //result = createProgramMultiply(result, base, RAM);
         inst.opCode = 2;
         inst.addressOne = result;
         inst.addressTwo = 1;
@@ -500,7 +510,7 @@ int createProgramExponential(int base, int exponent, int* RAM) {
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    expInstructions[exponent + 1] = inst;
+    expInstructions[(int)exponent + 1] = inst;
 
     machine(expInstructions, RAM);
 
@@ -516,7 +526,7 @@ int createProgramExponential(int base, int exponent, int* RAM) {
 
 }
 
-int createProgramDelta(int a, int b, int c, int* RAM) {
+void createProgramDelta(double a, double b, double c, double* RAM) {
     // 0 => somar
         // 1 => sub
         // 2 => levar para memoriaDados
