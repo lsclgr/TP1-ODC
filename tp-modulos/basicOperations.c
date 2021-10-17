@@ -363,6 +363,15 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         printf("%s\n\n", stringConvert);
         divResult = atof(stringConvert);
     }
+
+    // levar para a RAM[500]
+    inst.opCode = 2;
+    inst.addressOne = divResult;
+    inst.addressTwo = 500;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+
     // trazer da RAM[4]
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -372,6 +381,6 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     dividend = inst.addressOne;
 
 
-    printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.5lf")"\n\n", dividend, divisor, divResult);
+    printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.5lf\n\n"), dividend, divisor, divResult);
 
 }

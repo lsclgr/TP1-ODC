@@ -21,7 +21,8 @@ int main() {
         "4 - Divisão\n"
         "5 - Exponencial\n"
         "6 - Delta\n"
-        "8 - Fatorial\n");
+        "8 - Fatorial\n"
+        "9 - Raiz quadrada\n");
     scanf("%d", &op);
 
     switch (op)
@@ -91,6 +92,22 @@ int main() {
         scanf("%lf", &num3);
 
         createProgramDelta(num1, num2, num3, RAM);
+
+        break;
+
+    case 8:
+        printf("Informe o número que você deseja saber o fatorial: ");
+        scanf("%lf", &num1);
+
+        createProgramFactorial(num1, RAM);
+
+        break;
+
+    case 9:
+        printf("Informe o número que você deseja saber a raiz quadrada: ");
+        scanf("%lf", &num1);
+
+        createProgramSquareRoot(num1, RAM);
 
         break;
 

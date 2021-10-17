@@ -1,6 +1,32 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
+
+// cores e formato de texto
+#define ANSI_RESET            "\x1b[0m"  // desativa os efeitos anteriores
+#define ANSI_BOLD             "\x1b[1m"  // coloca o texto em negrito
+#define ANSI_COLOR_BLACK      "\x1b[30m"
+#define ANSI_COLOR_RED        "\x1b[31m"
+#define ANSI_COLOR_GREEN      "\x1b[32m"
+#define ANSI_COLOR_YELLOW     "\x1b[33m"
+#define ANSI_COLOR_BLUE       "\x1b[34m"
+#define ANSI_COLOR_MAGENTA    "\x1b[35m"
+#define ANSI_COLOR_CYAN       "\x1b[36m"
+#define ANSI_COLOR_WHITE      "\x1b[37m"
+
+// macros para facilitar o uso
+#define BOLD(string)       ANSI_BOLD             string ANSI_RESET
+#define BLACK(string)      ANSI_COLOR_BLACK      string ANSI_RESET
+#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
+#define RED(string)        ANSI_COLOR_RED        string ANSI_RESET
+#define GREEN(string)      ANSI_COLOR_GREEN      string ANSI_RESET
+#define YELLOW(string)     ANSI_COLOR_YELLOW     string ANSI_RESET
+#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
+#define MAGENTA(string)    ANSI_COLOR_MAGENTA    string ANSI_RESET
+#define CYAN(string)       ANSI_COLOR_CYAN       string ANSI_RESET
+#define WHITE(string)      ANSI_COLOR_WHITE      string ANSI_RESET
+
 #define MAX_VALUE 100000
 
 typedef struct {
@@ -22,6 +48,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM);
 void createProgramExponential(double base, double exponent, double* RAM);
 void createProgramFactorial(double number, double* RAM);
 void createProgramDelta(double a, double b, double c, double* RAM);
+void createProgramSquareRoot(double number, double* RAM);
 
 int main() {
     srand(time(NULL));
@@ -40,7 +67,8 @@ int main() {
         "4 - Divisão\n"
         "5 - Exponencial\n"
         "6 - Delta\n"
-        "8 - Fatorial\n");
+        "8 - Fatorial\n"
+        "9 - Raiz quadrada\n");
     scanf("%d", &op);
 
     switch (op)
@@ -120,6 +148,15 @@ int main() {
         createProgramFactorial(num1, RAM);
 
         break;
+
+    case 9:
+        printf("Informe o número que você deseja saber a raiz quadrada: ");
+        scanf("%lf", &num1);
+
+        createProgramSquareRoot(num1, RAM);
+        printf("\n\n157\n\n");
+        break;
+
 
     default:
         break;
@@ -376,7 +413,9 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     // 15 / 4 = (15-4); (11-4); (7-4); (3-4) => 3
 
     // monto um programa apenas para levar os dados para RAM
-    Instruction* divInstructions = malloc(5 * sizeof(Instruction));
+    Instruction* divInstructions = malloc(6 * sizeof(Instruction));
+    char stringConvert[10];
+    double divResult;
 
     Instruction inst;
     inst.opCode = 2;
@@ -388,7 +427,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
 
     inst.opCode = 2;
     inst.addressOne = divisor;
-    inst.addressTwo = 1;
+    inst.addressTwo = 32;
     inst.addressThree = -1;
     divInstructions[1] = inst;
     // RAM[1] = divisor
@@ -410,11 +449,18 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     // representa quantas subtrações foram feitas
     // representa o resultado da divisão
 
+    inst.opCode = 2;
+    inst.addressOne = dividend;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    divInstructions[4] = inst;
+    // RAM[4] = dividend
+
     inst.opCode = -1;
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    divInstructions[4] = inst;
+    divInstructions[5] = inst;
 
     machine(divInstructions, RAM);
 
@@ -426,10 +472,10 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     interpretedMachine(&inst, RAM);
     dividend = inst.addressOne;
 
-    // trazer da memoriaDados[1]
+    // trazer da RAM[1]
     inst.opCode = 3;
     inst.addressOne = -1;
-    inst.addressTwo = 1;
+    inst.addressTwo = 32;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     divisor = inst.addressOne;
@@ -441,7 +487,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         // subtrair
         inst.opCode = 1;
         inst.addressOne = 0;
-        inst.addressTwo = 1;
+        inst.addressTwo = 32;
         inst.addressThree = 0;
         interpretedMachine(&inst, RAM);
 
@@ -460,17 +506,123 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         interpretedMachine(&inst, RAM);
         dividend = inst.addressOne;
     }
+
     // trazer da RAM[3]
     inst.opCode = 3;
     inst.addressOne = -1;
     inst.addressTwo = 3;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
+    divResult = inst.addressOne;
+
+    char aux = (int)inst.addressOne + '0';
+    stringConvert[0] = aux;
+    stringConvert[1] = '.';
+
+    if (dividend > 0) {
+        // trazer da RAM[0]
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 0;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        dividend = inst.addressOne;
+
+        for (int i = 2; i < 9;i++) {
+            inst.opCode = 2;
+            inst.addressOne = 0;
+            inst.addressTwo = 3;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+
+            createProgramMultiply(dividend, 10, RAM);
+
+            // trazer da RAM[1]
+            inst.opCode = 3;
+            inst.addressOne = -1;
+            inst.addressTwo = 1;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+            dividend = inst.addressOne;
+
+            // levar para RAM[0]
+            inst.opCode = 2;
+            inst.addressOne = dividend;
+            inst.addressTwo = 0;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
 
 
-    printf("\nO resultado da divisão de %.2lf por %.2lf é: %.2lf\n\n", dividend, divisor, inst.addressOne);
+            while (dividend >= divisor) {
+                // subtrair
+                inst.opCode = 1;
+                inst.addressOne = 0;
+                inst.addressTwo = 32;
+                inst.addressThree = 0;
+                interpretedMachine(&inst, RAM);
+
+                // somar
+                inst.opCode = 0;
+                inst.addressOne = 2;
+                inst.addressTwo = 3;
+                inst.addressThree = 3;
+                interpretedMachine(&inst, RAM);
+
+                // trazer da RAM[0]
+                inst.opCode = 3;
+                inst.addressOne = -1;
+                inst.addressTwo = 0;
+                inst.addressThree = -1;
+                interpretedMachine(&inst, RAM);
+                dividend = inst.addressOne;
+            }
+
+            // trazer da RAM[3]
+            inst.opCode = 3;
+            inst.addressOne = -1;
+            inst.addressTwo = 3;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+            char aux = (int)inst.addressOne + '0';
+            stringConvert[i] = aux;
+
+            // trazer da RAM[0]
+            inst.opCode = 3;
+            inst.addressOne = -1;
+            inst.addressTwo = 0;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+            dividend = inst.addressOne;
+
+            if (dividend == 0) {
+                break;
+            }
+        }
+        printf("%s\n\n", stringConvert);
+        divResult = atof(stringConvert);
+    }
+
+    // levar para a RAM[500]
+    inst.opCode = 2;
+    inst.addressOne = divResult;
+    inst.addressTwo = 500;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+
+    // trazer da RAM[4]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    dividend = inst.addressOne;
+
+
+    printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.5lf\n\n"), dividend, divisor, divResult);
 
 }
+
 void createProgramExponential(double base, double exponent, double* RAM) {
 
     // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
@@ -609,12 +761,17 @@ void createProgramFactorial(double number, double* RAM) {
     //5! = 5 . 4 . 3 . 2 . 1 = 120
     // opcode | add1 | add2 | add3
 
-    Instruction* factorialInstruction = malloc((4) * sizeof(Instruction));
+    Instruction* factorialInstruction = malloc((5) * sizeof(Instruction));
 
     Instruction inst;
-    double result;
+    double result, initNumb;
 
-    printf("\n\n617\n\n");
+    inst.opCode = 2;
+    inst.addressOne = number;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    factorialInstruction[3] = inst;
+    // número para a RAM[3]
 
     inst.opCode = 2;
     inst.addressOne = number;
@@ -641,15 +798,13 @@ void createProgramFactorial(double number, double* RAM) {
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    factorialInstruction[3] = inst;
+    factorialInstruction[4] = inst;
     // HALT
 
     machine(factorialInstruction, RAM);
 
-    printf("\n\n649\n\n");
-
     for (int i = (number - 1); i > 0; i--) {
-        printf("\n\n652\n\n");
+
         inst.opCode = 3;
         inst.addressOne = -1;
         inst.addressTwo = 0;
@@ -672,6 +827,15 @@ void createProgramFactorial(double number, double* RAM) {
         inst.addressThree = 0;
         interpretedMachine(&inst, RAM);
     }
+
+    // trazer da RAM[4]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    initNumb = inst.addressOne;
+
     // trazer da RAM[1]
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -679,5 +843,160 @@ void createProgramFactorial(double number, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf("\n%.0lf! é: %.0lf\n\n" ,number, inst.addressOne);
+    printf("\n%.0lf! é: %.0lf\n\n", initNumb, inst.addressOne);
+}
+
+void createProgramSquareRoot(double number, double* RAM) {
+    printf("\n\n841\n\n");
+    double precision = 0.000001, initNumb, comparation, divResult, numberDiv2, numberDiv22;
+
+    Instruction* sqrtInstruction = malloc((4) * sizeof(Instruction));
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = number;
+    inst.addressTwo = 104;
+    inst.addressThree = -1;
+    sqrtInstruction[2] = inst;
+    //Levar para a RAM[104]
+
+    inst.opCode = 2;
+    inst.addressOne = number;
+    inst.addressTwo = 100;
+    inst.addressThree = -1;
+    sqrtInstruction[0] = inst;
+    //Levar para a RAM[100]
+
+    inst.opCode = 2;
+    inst.addressOne = 1;
+    inst.addressTwo = 102;
+    inst.addressThree = -1;
+    sqrtInstruction[1] = inst;
+    //Levar para a RAM[102]
+
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    sqrtInstruction[3] = inst;
+    // HALT
+
+    machine(sqrtInstruction, RAM);
+
+    inst.opCode = 1;
+    inst.addressOne = 100;
+    inst.addressTwo = 102;
+    inst.addressThree = 103;
+    interpretedMachine(&inst, RAM);
+    //sub para a comparação
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 103;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    comparation = inst.addressOne;
+    //trazer da RAM[103]
+    printf("\n\n892\n\n");
+    while (comparation >= precision) {
+
+        inst.opCode = 0;
+        inst.addressOne = 102;
+        inst.addressTwo = 100;
+        inst.addressThree = 106;
+        interpretedMachine(&inst, RAM);
+        // (a + b)
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 106;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        //trazer RAM[106]
+
+        createProgramDivide(inst.addressOne, 2, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 500;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divResult = inst.addressOne;
+        //trazer result da div RAM[3]
+
+        inst.opCode = 2;
+        inst.addressOne = divResult;
+        inst.addressTwo = 100;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        // mandar para RAM[100];
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 104;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        numberDiv2 = inst.addressOne;
+        // tranzendo RAM[104]
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 100;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        numberDiv22 = inst.addressOne;
+        printf("\n\n%lf\n\n", numberDiv22);
+
+        //trazendo RAM[100]
+
+        createProgramDivide(numberDiv2, numberDiv22, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 500;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divResult = inst.addressOne;
+        //trazer result da div RAM[3]
+
+        inst.opCode = 2;
+        inst.addressOne = divResult;
+        inst.addressTwo = 102;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        //levar para RAM[102]
+
+        inst.opCode = 1;
+        inst.addressOne = 100;
+        inst.addressTwo = 102;
+        inst.addressThree = 103;
+        interpretedMachine(&inst, RAM);
+        //sub para a comparação
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 103;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        comparation = inst.addressOne;
+        //trazer da RAM[103]
+
+    }
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 104;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    initNumb = inst.addressOne;
+    // trazer da RAM[104]
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 100;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    printf("\nA raiz quadrada de %.0lf é: %.2lf\n\n", initNumb, inst.addressOne);
 }

@@ -223,5 +223,160 @@ void createProgramFactorial(double number, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf("\n%.0lf! é: %.0lf\n\n" ,number, inst.addressOne);
+    printf("\n%.0lf! é: %.0lf\n\n", number, inst.addressOne);
+}
+
+void createProgramSquareRoot(double number, double* RAM) {
+
+    double precision = 0.000001, initNumb, comparation, divResult, numberDiv2, numberDiv22;
+
+    Instruction* sqrtInstruction = malloc((4) * sizeof(Instruction));
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = number;
+    inst.addressTwo = 104;
+    inst.addressThree = -1;
+    sqrtInstruction[2] = inst;
+    //Levar para a RAM[104]
+
+    inst.opCode = 2;
+    inst.addressOne = number;
+    inst.addressTwo = 100;
+    inst.addressThree = -1;
+    sqrtInstruction[0] = inst;
+    //Levar para a RAM[100]
+
+    inst.opCode = 2;
+    inst.addressOne = 1;
+    inst.addressTwo = 102;
+    inst.addressThree = -1;
+    sqrtInstruction[1] = inst;
+    //Levar para a RAM[102]
+
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    sqrtInstruction[3] = inst;
+    // HALT
+
+    machine(sqrtInstruction, RAM);
+
+    inst.opCode = 1;
+    inst.addressOne = 100;
+    inst.addressTwo = 102;
+    inst.addressThree = 103;
+    interpretedMachine(&inst, RAM);
+    //sub para a comparação
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 103;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    comparation = inst.addressOne;
+    //trazer da RAM[103]
+
+    while (comparation >= precision) {
+
+        inst.opCode = 0;
+        inst.addressOne = 102;
+        inst.addressTwo = 100;
+        inst.addressThree = 106;
+        interpretedMachine(&inst, RAM);
+        // (a + b)
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 106;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        //trazer RAM[106]
+
+        createProgramDivide(inst.addressOne, 2, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 500;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divResult = inst.addressOne;
+        //trazer result da div RAM[3]
+
+        inst.opCode = 2;
+        inst.addressOne = divResult;
+        inst.addressTwo = 100;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        // mandar para RAM[100];
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 104;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        numberDiv2 = inst.addressOne;
+        // tranzendo RAM[104]
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 100;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        numberDiv22 = inst.addressOne;
+        printf("\n\n%lf\n\n", numberDiv22);
+
+        //trazendo RAM[100]
+
+        createProgramDivide(numberDiv2, numberDiv22, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 500;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divResult = inst.addressOne;
+        //trazer result da div RAM[3]
+
+        inst.opCode = 2;
+        inst.addressOne = divResult;
+        inst.addressTwo = 102;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        //levar para RAM[102]
+
+        inst.opCode = 1;
+        inst.addressOne = 100;
+        inst.addressTwo = 102;
+        inst.addressThree = 103;
+        interpretedMachine(&inst, RAM);
+        //sub para a comparação
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 103;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        comparation = inst.addressOne;
+        //trazer da RAM[103]
+
+    }
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 104;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    initNumb = inst.addressOne;
+    // trazer da RAM[104]
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 100;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    printf("\nA raiz quadrada de %.0lf é: %.2lf\n\n", initNumb, inst.addressOne);
 }
