@@ -3,6 +3,47 @@
 #include <time.h>
 #define MAX_VALUE 100000
 
+// cores e formato de texto
+#define ANSI_RESET            "\x1b[0m"  // desativa os efeitos anteriores
+#define ANSI_BOLD             "\x1b[1m"  // coloca o texto em negrito
+#define ANSI_COLOR_BLACK      "\x1b[30m"
+#define ANSI_COLOR_RED        "\x1b[31m"
+#define ANSI_COLOR_GREEN      "\x1b[32m"
+#define ANSI_COLOR_YELLOW     "\x1b[33m"
+#define ANSI_COLOR_BLUE       "\x1b[34m"
+#define ANSI_COLOR_MAGENTA    "\x1b[35m"
+#define ANSI_COLOR_CYAN       "\x1b[36m"
+#define ANSI_COLOR_WHITE      "\x1b[37m"
+#define ANSI_BG_COLOR_BLACK   "\x1b[40m"
+#define ANSI_BG_COLOR_RED     "\x1b[41m"
+#define ANSI_BG_COLOR_GREEN   "\x1b[42m"
+#define ANSI_BG_COLOR_YELLOW  "\x1b[43m"
+#define ANSI_BG_COLOR_BLUE    "\x1b[44m"
+#define ANSI_BG_COLOR_MAGENTA "\x1b[45m"
+#define ANSI_BG_COLOR_CYAN    "\x1b[46m"
+#define ANSI_BG_COLOR_WHITE   "\x1b[47m"
+
+// macros para facilitar o uso
+#define BOLD(string)       ANSI_BOLD             string ANSI_RESET
+#define BLACK(string)      ANSI_COLOR_BLACK      string ANSI_RESET
+#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
+#define RED(string)        ANSI_COLOR_RED        string ANSI_RESET
+#define GREEN(string)      ANSI_COLOR_GREEN      string ANSI_RESET
+#define YELLOW(string)     ANSI_COLOR_YELLOW     string ANSI_RESET
+#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
+#define MAGENTA(string)    ANSI_COLOR_MAGENTA    string ANSI_RESET
+#define CYAN(string)       ANSI_COLOR_CYAN       string ANSI_RESET
+#define WHITE(string)      ANSI_COLOR_WHITE      string ANSI_RESET
+#define BG_BLACK(string)   ANSI_BG_COLOR_BLACK   string ANSI_RESET
+#define BG_BLUE(string)    ANSI_BG_COLOR_BLUE    string ANSI_RESET
+#define BG_RED(string)     ANSI_BG_COLOR_RED     string ANSI_RESET
+#define BG_GREEN(string)   ANSI_BG_COLOR_GREEN   string ANSI_RESET
+#define BG_YELLOW(string)  ANSI_BG_COLOR_YELLOW  string ANSI_RESET
+#define BG_BLUE(string)    ANSI_BG_COLOR_BLUE    string ANSI_RESET
+#define BG_MAGENTA(string) ANSI_BG_COLOR_MAGENTA string ANSI_RESET
+#define BG_CYAN(string)    ANSI_BG_COLOR_CYAN    string ANSI_RESET
+#define BG_WHITE(string)   ANSI_BG_COLOR_WHITE   string ANSI_RESET
+
 typedef struct {
     int opCode;
     double addressOne;
@@ -188,7 +229,7 @@ void interpretedMachine(Instruction* inst, double* RAM) {
         int add3 = (int)inst->addressThree;
         RAM[add3] = sum;
 
-        printf("somando %.1lf com %.1lf e gerando %.1lf!\n", contentRAM1, contentRAM2, sum);
+        printf(GREEN("somando %.1lf com %.1lf e gerando %.1lf!")"\n", contentRAM1, contentRAM2, sum);
         break;
     }
           // SUBTRAIR
@@ -203,7 +244,7 @@ void interpretedMachine(Instruction* inst, double* RAM) {
         int add3 = (int)inst->addressThree;
         RAM[add3] = sub;
 
-        printf("subtraindo %.1lf com %.1lf e gerando %.1lf!\n", contentRAM1, contentRAM2, sub);
+        printf(RED("subtraindo %.1lf com %.1lf e gerando %.1lf!")"\n", contentRAM1, contentRAM2, sub);
         break;
     }
           // levar para RAM
@@ -259,7 +300,7 @@ void createProgramSum(double num1, double num2, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf("\nO resultado da soma de %.1lf e %.1lf é: %.1lf\n\n", num1, num2, inst.addressOne);
+    printf(CYAN(BOLD("\nO resultado da soma de %.1lf e %.1lf é: %.1lf"))"\n\n", num1, num2, inst.addressOne);
 
 }
 
@@ -301,7 +342,7 @@ void createProgramSub(double num1, double num2, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf("\nO resultado da subtração de %.1lf e %.1lf é: %.1lf\n\n", num1, num2, inst.addressOne);
+    printf(CYAN(BOLD("\nO resultado da subtração de %.1lf e %.1lf é: %.1lf"))"\n\n", num1, num2, inst.addressOne);
 }
 
 void createProgramMultiply(double multiplicand, double multiplier, double* RAM) {
@@ -354,7 +395,7 @@ void createProgramMultiply(double multiplicand, double multiplier, double* RAM) 
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf("\nO resultado da multiplicação de %.2lf e %.2lf é: %.2lf\n\n", multiplicand, multiplier, inst.addressOne);
+    printf(BLUE("\nMultiplicando %.2lf e %.2lf e gerando: %.2lf")"\n\n", multiplicand, multiplier, inst.addressOne);
 }
 
 void createProgramDivide(double dividend, double divisor, double* RAM) {
@@ -368,7 +409,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     // 15 / 4 = (15-4); (11-4); (7-4); (3-4) => 3
 
     // monto um programa apenas para levar os dados para RAM
-    Instruction* divInstructions = malloc(5 * sizeof(Instruction));
+    Instruction* divInstructions = malloc(6 * sizeof(Instruction));
 
     Instruction inst;
     inst.opCode = 2;
@@ -402,11 +443,18 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     // representa quantas subtrações foram feitas
     // representa o resultado da divisão
 
+    inst.opCode = 2;
+    inst.addressOne = dividend;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    divInstructions[4] = inst;
+    // RAM[4] = dividend
+
     inst.opCode = -1;
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    divInstructions[4] = inst;
+    divInstructions[5] = inst;
 
     machine(divInstructions, RAM);
 
@@ -452,6 +500,14 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         interpretedMachine(&inst, RAM);
         dividend = inst.addressOne;
     }
+    // trazer da RAM[4]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    dividend = inst.addressOne;
+
     // trazer da RAM[3]
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -460,7 +516,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     interpretedMachine(&inst, RAM);
 
 
-    printf("\nO resultado da divisão de %.2lf por %.2lf é: %.2lf\n\n", dividend, divisor, inst.addressOne);
+    printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.2lf")"\n\n", dividend, divisor, inst.addressOne);
 
 }
 void createProgramExponential(double base, double exponent, double* RAM) {
@@ -468,49 +524,35 @@ void createProgramExponential(double base, double exponent, double* RAM) {
     // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
     // opcode | add1 | add2 | add3
 
-    Instruction* expInstructions = malloc(((int)exponent + 2) * sizeof(Instruction));
-
     Instruction inst;
-
-    int result = 1;
 
     inst.opCode = 2;
     inst.addressOne = base;
     inst.addressTwo = 0;
     inst.addressThree = -1;
-    expInstructions[0] = inst;
     //base na RAM[0]
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 2;
+    inst.addressOne = 1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    //base na RAM[1]
+    interpretedMachine(&inst, RAM);
 
 
     for (int i = 1; i < exponent + 1; i++) {
-        //trazer da ram
-        //result = createProgramMultiply(result, base, RAM);
-        inst.opCode = 2;
-        inst.addressOne = result;
+        createProgramMultiply(inst.addressOne, base, RAM);
+
+        // trazer da RAM[1]
+        inst.opCode = 3;
+        inst.addressOne = -1;
         inst.addressTwo = 1;
         inst.addressThree = -1;
-        expInstructions[1] = inst;
-        //resultado na RAM[1].
+        interpretedMachine(&inst, RAM);
     }
 
-    // inserindo a ultima instrucao do programa que faz o HALT
-    inst.opCode = -1;
-    inst.addressOne = -1;
-    inst.addressTwo = -1;
-    inst.addressThree = -1;
-    expInstructions[(int)exponent + 1] = inst;
-
-    machine(expInstructions, RAM);
-
-
-    // trazer da RAM[1]
-    inst.opCode = 3;
-    inst.addressOne = -1;
-    inst.addressTwo = 1;
-    inst.addressThree = -1;
-    interpretedMachine(&inst, RAM);
-
-    printf("\nO resultado de %.2lf elevado a %.0lf é: %.2lf\n\n", base, exponent, inst.addressOne);
+    printf(CYAN(BOLD("\nO resultado de %.2lf elevado a %.0lf é: %.0lf"))"\n\n", base, exponent, inst.addressOne);
 
 }
 
@@ -593,5 +635,5 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf("\nO resultado de delta é: %.2lf\n\n", inst.addressOne);
+    printf(CYAN(BOLD("\nO resultado de delta é: %.2lf"))"\n\n", inst.addressOne);
 }
