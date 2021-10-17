@@ -492,7 +492,7 @@ int createProgramExponential(int base, int exponent, int* RAM) {
         inst.addressTwo = 1;
         inst.addressThree = -1;
         expInstructions[1] = inst;
-        //resultado na RAM[1]
+        //resultado na RAM[1].
     }
 
     // inserindo a ultima instrucao do programa que faz o HALT
