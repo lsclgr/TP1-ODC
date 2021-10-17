@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <string.h>
 #include "machine.h"
 
 // cores e formato de texto
@@ -175,6 +176,8 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
 
     // monto um programa apenas para levar os dados para RAM
     Instruction* divInstructions = malloc(6 * sizeof(Instruction));
+    char stringConvert[10];
+    double divResult;
 
     Instruction inst;
     inst.opCode = 2;
@@ -186,7 +189,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
 
     inst.opCode = 2;
     inst.addressOne = divisor;
-    inst.addressTwo = 1;
+    inst.addressTwo = 32;
     inst.addressThree = -1;
     divInstructions[1] = inst;
     // RAM[1] = divisor
@@ -231,10 +234,10 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     interpretedMachine(&inst, RAM);
     dividend = inst.addressOne;
 
-    // trazer da memoriaDados[1]
+    // trazer da RAM[1]
     inst.opCode = 3;
     inst.addressOne = -1;
-    inst.addressTwo = 1;
+    inst.addressTwo = 32;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     divisor = inst.addressOne;
@@ -246,7 +249,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         // subtrair
         inst.opCode = 1;
         inst.addressOne = 0;
-        inst.addressTwo = 1;
+        inst.addressTwo = 32;
         inst.addressThree = 0;
         interpretedMachine(&inst, RAM);
 
@@ -265,6 +268,101 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         interpretedMachine(&inst, RAM);
         dividend = inst.addressOne;
     }
+
+    // trazer da RAM[3]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 3;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    divResult = inst.addressOne;
+
+    char aux = (int)inst.addressOne + '0';
+    stringConvert[0] = aux;
+    stringConvert[1] = '.';
+
+    if (dividend > 0) {
+        // trazer da RAM[0]
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 0;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        dividend = inst.addressOne;
+
+        for (int i = 2; i < 9;i++) {
+            inst.opCode = 2;
+            inst.addressOne = 0;
+            inst.addressTwo = 3;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+
+            createProgramMultiply(dividend, 10, RAM);
+
+            // trazer da RAM[1]
+            inst.opCode = 3;
+            inst.addressOne = -1;
+            inst.addressTwo = 1;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+            dividend = inst.addressOne;
+
+            // levar para RAM[0]
+            inst.opCode = 2;
+            inst.addressOne = dividend;
+            inst.addressTwo = 0;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+
+
+            while (dividend >= divisor) {
+                // subtrair
+                inst.opCode = 1;
+                inst.addressOne = 0;
+                inst.addressTwo = 32;
+                inst.addressThree = 0;
+                interpretedMachine(&inst, RAM);
+
+                // somar
+                inst.opCode = 0;
+                inst.addressOne = 2;
+                inst.addressTwo = 3;
+                inst.addressThree = 3;
+                interpretedMachine(&inst, RAM);
+
+                // trazer da RAM[0]
+                inst.opCode = 3;
+                inst.addressOne = -1;
+                inst.addressTwo = 0;
+                inst.addressThree = -1;
+                interpretedMachine(&inst, RAM);
+                dividend = inst.addressOne;
+            }
+
+            // trazer da RAM[3]
+            inst.opCode = 3;
+            inst.addressOne = -1;
+            inst.addressTwo = 3;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+            char aux = (int)inst.addressOne + '0';
+            stringConvert[i] = aux;
+
+            // trazer da RAM[0]
+            inst.opCode = 3;
+            inst.addressOne = -1;
+            inst.addressTwo = 0;
+            inst.addressThree = -1;
+            interpretedMachine(&inst, RAM);
+            dividend = inst.addressOne;
+
+            if (dividend == 0) {
+                break;
+            }
+        }
+        printf("%s\n\n", stringConvert);
+        divResult = atof(stringConvert);
+    }
     // trazer da RAM[4]
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -273,14 +371,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     interpretedMachine(&inst, RAM);
     dividend = inst.addressOne;
 
-    // trazer da RAM[3]
-    inst.opCode = 3;
-    inst.addressOne = -1;
-    inst.addressTwo = 3;
-    inst.addressThree = -1;
-    interpretedMachine(&inst, RAM);
 
-
-    printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.2lf")"\n\n", dividend, divisor, inst.addressOne);
+    printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.5lf")"\n\n", dividend, divisor, divResult);
 
 }
