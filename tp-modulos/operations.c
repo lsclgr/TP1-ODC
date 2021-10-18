@@ -34,6 +34,41 @@ void createProgramExponential(double base, double exponent, double* RAM) {
     // opcode | add1 | add2 | add3
 
     Instruction inst;
+    double baseConvert, result, realBase;
+
+    inst.opCode = 2;
+    inst.addressOne = base;
+    inst.addressTwo = 700;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    if (base < 0) {
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 700;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        realBase = inst.addressOne;
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        baseConvert = inst.addressOne;
+
+        createProgramSub(base, baseConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        base = inst.addressOne;
+    }
+
     if (base == 0) {
         inst.opCode = 2;
         inst.addressOne = 1;
@@ -57,6 +92,8 @@ void createProgramExponential(double base, double exponent, double* RAM) {
         //base na RAM[1]
         interpretedMachine(&inst, RAM);
 
+
+
         for (int i = 1; i < exponent + 1; i++) {
             createProgramMultiply(inst.addressOne, base, RAM);
 
@@ -66,10 +103,33 @@ void createProgramExponential(double base, double exponent, double* RAM) {
             inst.addressTwo = 1;
             inst.addressThree = -1;
             interpretedMachine(&inst, RAM);
+            result = inst.addressOne;
         }
     }
 
-    printf(CYAN(BOLD("\nO resultado de %.2lf elevado a %.0lf é: %.0lf"))"\n\n", base, exponent, inst.addressOne);
+    if ((int)exponent % 2 != 0 && baseConvert < 0) {
+
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        baseConvert = inst.addressOne;
+
+        createProgramSub(result, baseConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        result = inst.addressOne;
+
+    }
+
+    printf(CYAN(BOLD("\nO resultado de %.2lf elevado a %.0lf é: %.0lf"))"\n\n", realBase, exponent, result);
 
 }
 
@@ -605,16 +665,23 @@ void createProgramIntAnglesSum(double n, double* RAM) {
     interpretedMachine(&inst, RAM);
     //n na RAM[250]
 
+    inst.opCode = 2;
+    inst.addressOne = 2;
+    inst.addressTwo = 251;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    //n na RAM[250]
+
     inst.opCode = 1;
-    inst.addressOne = n;
-    inst.addressTwo = 2;
-    inst.addressThree = 251;
+    inst.addressOne = 250;
+    inst.addressTwo = 251;
+    inst.addressThree = 252;
     interpretedMachine(&inst, RAM);
     //n-2 na RAM[251]
 
     inst.opCode = 3;
     inst.addressOne = -1;
-    inst.addressTwo = 251;
+    inst.addressTwo = 252;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     double result = inst.addressOne;
@@ -684,11 +751,18 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
     apInstructions[4] = inst;
     //n/2 na RAM[304]
 
+    inst.opCode = -1;
+    inst.addressOne = -1;
+    inst.addressTwo = -1;
+    inst.addressThree = -1;
+    apInstructions[5] = inst;
+    //HALT
+
     machine(apInstructions, RAM);
 
     inst.opCode = 3;
     inst.addressOne = -1;
-    inst.addressTwo = 304;
+    inst.addressTwo = 303;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     double resultSum = inst.addressOne;

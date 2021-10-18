@@ -67,7 +67,7 @@ void createProgramSum(double num1, double num2, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(CYAN(BOLD("\nO resultado da soma de %.1lf e %.1lf é: %.1lf"))"\n\n", num1, num2, inst.addressOne);
-    free(sumInstructions);
+
 }
 
 void createProgramSub(double num1, double num2, double* RAM) {
@@ -109,7 +109,6 @@ void createProgramSub(double num1, double num2, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(CYAN(BOLD("\nO resultado da subtração de %.1lf e %.1lf é: %.1lf"))"\n\n", num1, num2, inst.addressOne);
-    free(subInstructions);
 }
 
 void createProgramMultiply(double multiplicand, double multiplier, double* RAM) {
@@ -121,10 +120,83 @@ void createProgramMultiply(double multiplicand, double multiplier, double* RAM) 
 
     // 3 x 400 = 3 + 3 + 3 + 3 + .... + 3 => 400 vezes
     // opcode | add1 | add2 | add3
+    Instruction inst;
+    double multiplicandConvert = 0, multiplierConvert = 0, result;
+
+
+    inst.opCode = 2;
+    inst.addressOne = multiplicand;
+    inst.addressTwo = 900;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 2;
+    inst.addressOne = multiplier;
+    inst.addressTwo = 901;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    if (multiplicand < 0) {
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 900;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        multiplicandConvert = inst.addressOne;
+
+        createProgramSub(multiplicand, multiplicandConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        multiplicand = inst.addressOne;
+
+        printf("\n%.2lf\n", multiplicand);
+    }
+
+    if (multiplier < 0) {
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 901;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        multiplierConvert = inst.addressOne;
+
+        createProgramSub(multiplier, multiplierConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        multiplier = inst.addressOne;
+
+        printf("\n%.2lf\n", multiplier);
+
+
+    }
 
     Instruction* multiplyInstructions = malloc(((int)multiplier + 3) * sizeof(Instruction));
 
-    Instruction inst;
+
 
     inst.opCode = 2;
     inst.addressOne = multiplicand;
@@ -161,9 +233,32 @@ void createProgramMultiply(double multiplicand, double multiplier, double* RAM) 
     inst.addressTwo = 1;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
+    result = inst.addressOne;
+
+    if ((multiplicandConvert < 0 && multiplierConvert >= 0) || (multiplicandConvert >= 0 && multiplierConvert < 0)) {
+
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        multiplicandConvert = inst.addressOne;
+
+        createProgramSub(result, multiplicandConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+
+
+
+    }
 
     printf(BLUE("\nMultiplicando %.2lf e %.2lf e gerando: %.2lf")"\n\n", multiplicand, multiplier, inst.addressOne);
-    free(multiplyInstructions);
 }
 
 void createProgramDivide(double dividend, double divisor, double* RAM) {
@@ -177,11 +272,86 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     // 15 / 4 = (15-4); (11-4); (7-4); (3-4) => 3
 
     // monto um programa apenas para levar os dados para RAM
+    Instruction inst;
+    double dividendConvert = 0, divisorConvert = 0;
+
+
+    inst.opCode = 2;
+    inst.addressOne = dividend;
+    inst.addressTwo = 800;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 2;
+    inst.addressOne = divisor;
+    inst.addressTwo = 801;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    if (dividend < 0) {
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 800;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        dividendConvert = inst.addressOne;
+
+        createProgramSub(dividend, dividendConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        dividend = inst.addressOne;
+
+        printf("\n%.2lf\n", dividend);
+    }
+
+    if (divisor < 0) {
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 801;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        createProgramSum(inst.addressOne, inst.addressOne, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divisorConvert = inst.addressOne;
+
+        createProgramSub(divisor, divisorConvert, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divisor = inst.addressOne;
+
+        printf("\n%.2lf\n", divisor);
+
+
+    }
+
+
     Instruction* divInstructions = malloc(6 * sizeof(Instruction));
     char stringConvert[10];
     double divResult;
 
-    Instruction inst;
+
     inst.opCode = 2;
     inst.addressOne = dividend;
     inst.addressTwo = 0;
@@ -365,12 +535,7 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
         divResult = atof(stringConvert);
     }
 
-    // levar para a RAM[500]
-    inst.opCode = 2;
-    inst.addressOne = divResult;
-    inst.addressTwo = 500;
-    inst.addressThree = -1;
-    interpretedMachine(&inst, RAM);
+
 
 
     // trazer da RAM[4]
@@ -381,7 +546,40 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
     interpretedMachine(&inst, RAM);
     dividend = inst.addressOne;
 
+    // levar para a RAM[500]
+    inst.opCode = 2;
+    inst.addressOne = divResult;
+    inst.addressTwo = 500;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    if ((dividendConvert < 0 && divisorConvert >= 0) || (dividendConvert >= 0 && divisorConvert < 0)) {
+
+        createProgramSum(divResult, divResult, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        dividendConvert = inst.addressOne;
+
+        createProgramSub(divResult, dividend, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        divResult = inst.addressOne;
+
+
+    }
+
+
+
+
 
     printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.5lf\n\n"), dividend, divisor, divResult);
-    free(divInstructions);
+
 }

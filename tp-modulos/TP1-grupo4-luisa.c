@@ -138,11 +138,15 @@ int main() {
 
             createProgramBhaskara(num1, num2, num3, RAM);
 
+            break;
+
         case 11:
             printf("Informe o numero de lados: ");
             scanf("%lf", &num1);
 
             createProgramIntAnglesSum(num1, RAM);
+
+            break;
 
         case 12:
             printf("Informe o numero de termos da PA: ");
@@ -155,6 +159,8 @@ int main() {
             scanf("%lf", &num3);
 
             createProgramAP(num1, num2, num3, RAM);
+
+            break;
 
         default:
             break;
