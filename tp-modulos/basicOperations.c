@@ -360,7 +360,6 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
                 break;
             }
         }
-        printf("%s\n\n", stringConvert);
         divResult = atof(stringConvert);
     }
 
