@@ -67,7 +67,7 @@ void createProgramSum(double num1, double num2, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(CYAN(BOLD("\nO resultado da soma de %.1lf e %.1lf é: %.1lf"))"\n\n", num1, num2, inst.addressOne);
-
+    free(sumInstructions);
 }
 
 void createProgramSub(double num1, double num2, double* RAM) {
@@ -109,6 +109,7 @@ void createProgramSub(double num1, double num2, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(CYAN(BOLD("\nO resultado da subtração de %.1lf e %.1lf é: %.1lf"))"\n\n", num1, num2, inst.addressOne);
+    free(subInstructions);
 }
 
 void createProgramMultiply(double multiplicand, double multiplier, double* RAM) {
@@ -162,6 +163,7 @@ void createProgramMultiply(double multiplicand, double multiplier, double* RAM) 
     interpretedMachine(&inst, RAM);
 
     printf(BLUE("\nMultiplicando %.2lf e %.2lf e gerando: %.2lf")"\n\n", multiplicand, multiplier, inst.addressOne);
+    free(multiplyInstructions);
 }
 
 void createProgramDivide(double dividend, double divisor, double* RAM) {
@@ -381,5 +383,5 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
 
 
     printf(YELLOW("\nDividindo %.2lf por %.2lf e gerando: %.5lf\n\n"), dividend, divisor, divResult);
-
+    free(divInstructions);
 }

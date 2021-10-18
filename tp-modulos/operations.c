@@ -180,6 +180,7 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(CYAN(BOLD("\nO resultado de delta é: %.2lf"))"\n\n", inst.addressOne);
+    free(deltaInstructions);
 }
 
 
@@ -254,6 +255,7 @@ void createProgramFactorial(double number, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(CYAN("\n%.0lf! é: %.0lf\n\n"), number, inst.addressOne);
+    free(factorialInstruction);
 }
 
 void createProgramSquareRoot(double number, double* RAM) {
@@ -409,6 +411,7 @@ void createProgramSquareRoot(double number, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(MAGENTA("\nA raiz quadrada de %.0lf é: %.2lf\n\n"), initNumb, inst.addressOne);
+    free(sqrtInstruction);
 }
 
 void createProgramBhaskara(double a, double b, double c, double* RAM) {
@@ -571,5 +574,129 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
     else {
         printf("\nNão é possível calcular bhaskara!\n");
     }
+    free(bhaskaraInstructions);
 
+}
+
+void createProgramIntAnglesSum(double n, double* RAM) {
+    //s=(n-1)x180
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = n;
+    inst.addressTwo = 250;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    //n na RAM[250]
+
+    inst.opCode = 1;
+    inst.addressOne = n;
+    inst.addressTwo = 2;
+    inst.addressThree = 251;
+    interpretedMachine(&inst, RAM);
+    //n-2 na RAM[251]
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 251;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double result = inst.addressOne;
+
+    createProgramMultiply(result, 180, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    result = inst.addressOne;
+
+    printf("\nA soma dos angulos internos do polígono de %.0lf lados é: %.0lf ", n, result);
+
+}
+
+void createProgramAP(double n, int a1, int an, double* RAM) {
+    //((a1+an)*n)/2
+
+    Instruction* apInstructions = malloc(10 * sizeof(Instruction));
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = n;
+    inst.addressTwo = 300;
+    inst.addressThree = -1;
+    apInstructions[0] = inst;
+    //n na RAM[300]
+
+    inst.opCode = 2;
+    inst.addressOne = a1;
+    inst.addressTwo = 301;
+    inst.addressThree = -1;
+    apInstructions[1] = inst;
+    //a1 na RAM[301]
+
+    inst.opCode = 2;
+    inst.addressOne = an;
+    inst.addressTwo = 302;
+    inst.addressThree = -1;
+    apInstructions[2] = inst;
+    //n na RAM[302]
+
+    inst.opCode = 0;
+    inst.addressOne = 301;
+    inst.addressTwo = 302;
+    inst.addressThree = 303;
+    apInstructions[3] = inst;
+    //a1+an na RAM[303]
+
+    createProgramDivide(n, 2, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 500;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double resultDiv = inst.addressOne;
+    //pegar result divisão
+
+    inst.opCode = 2;
+    inst.addressOne = resultDiv;
+    inst.addressTwo = 304;
+    inst.addressThree = -1;
+    apInstructions[4] = inst;
+    //n/2 na RAM[304]
+
+    machine(apInstructions, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 304;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double resultSum = inst.addressOne;
+    //pegar result soma
+
+    createProgramMultiply(resultDiv, resultSum, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double result = inst.addressOne;
+    //pegar result multiply
+
+    inst.opCode = 2;
+    inst.addressOne = result;
+    inst.addressTwo = 305;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    //resultado na RAM[305]
+
+    printf("\nO resultado da soma da PA é: %.2lf\n", result);
+
+    free(apInstructions);
 }

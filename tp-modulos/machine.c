@@ -45,6 +45,7 @@ void createRandomInstructions(double* RAM) {
     instructions[99] = inst;
 
     machine(instructions, RAM);
+    free(instructions);
 }
 Instruction* toCompile(Instruction* instructions) {
     // aqui teria o q o GCC faz, que demorou décadas para ser feito
