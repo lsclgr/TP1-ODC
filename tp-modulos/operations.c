@@ -365,7 +365,7 @@ void createProgramSquareRoot(double number, double* RAM) {
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
         numberDiv2 = inst.addressOne;
-        // tranzendo RAM[104]
+        // trazendo RAM[104]
 
         inst.opCode = 3;
         inst.addressOne = -1;
