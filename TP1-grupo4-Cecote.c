@@ -154,7 +154,7 @@ int main() {
         scanf("%lf", &num1);
 
         createProgramSquareRoot(num1, RAM);
-        printf("\n\n157\n\n");
+
         break;
 
 
@@ -847,7 +847,7 @@ void createProgramFactorial(double number, double* RAM) {
 }
 
 void createProgramSquareRoot(double number, double* RAM) {
-    printf("\n\n841\n\n");
+
     double precision = 0.000001, initNumb, comparation, divResult, numberDiv2, numberDiv22;
 
     Instruction* sqrtInstruction = malloc((4) * sizeof(Instruction));
@@ -898,7 +898,7 @@ void createProgramSquareRoot(double number, double* RAM) {
     interpretedMachine(&inst, RAM);
     comparation = inst.addressOne;
     //trazer da RAM[103]
-    printf("\n\n892\n\n");
+
     while (comparation >= precision) {
 
         inst.opCode = 0;
