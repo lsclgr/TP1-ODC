@@ -183,16 +183,22 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     free(deltaInstructions);
 }
 
-
 void createProgramFactorial(double number, double* RAM) {
 
     //5! = 5 . 4 . 3 . 2 . 1 = 120
     // opcode | add1 | add2 | add3
 
-    Instruction* factorialInstruction = malloc((4) * sizeof(Instruction));
+    Instruction* factorialInstruction = malloc((5) * sizeof(Instruction));
 
     Instruction inst;
-    double result;
+    double result, initNumb;
+
+    inst.opCode = 2;
+    inst.addressOne = number;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    factorialInstruction[3] = inst;
+    // número para a RAM[3]
 
     inst.opCode = 2;
     inst.addressOne = number;
@@ -219,12 +225,13 @@ void createProgramFactorial(double number, double* RAM) {
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
-    factorialInstruction[3] = inst;
+    factorialInstruction[4] = inst;
     // HALT
 
     machine(factorialInstruction, RAM);
 
     for (int i = (number - 1); i > 0; i--) {
+
         inst.opCode = 3;
         inst.addressOne = -1;
         inst.addressTwo = 0;
@@ -247,6 +254,15 @@ void createProgramFactorial(double number, double* RAM) {
         inst.addressThree = 0;
         interpretedMachine(&inst, RAM);
     }
+
+    // trazer da RAM[4]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 4;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    initNumb = inst.addressOne;
+
     // trazer da RAM[1]
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -254,8 +270,7 @@ void createProgramFactorial(double number, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf(CYAN("\n%.0lf! é: %.0lf\n\n"), number, inst.addressOne);
-    free(factorialInstruction);
+    printf("\n%.0lf! é: %.0lf\n\n", initNumb, inst.addressOne);
 }
 
 void createProgramSquareRoot(double number, double* RAM) {
