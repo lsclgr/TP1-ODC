@@ -36,6 +36,8 @@ int main() {
             "8 - Fatorial\n"
             "9 - Raiz quadrada\n"
             "10- Bhaskara\n"
+            "11- Soma dos angulos internos\n"
+            "12- Progressão aritmética\n"
             "0 - SAIR\n")));
         scanf("%d", &op);
         switch (op)
@@ -136,9 +138,28 @@ int main() {
 
             createProgramBhaskara(num1, num2, num3, RAM);
 
+        case 11:
+            printf("Informe o numero de lados: ");
+            scanf("%lf", &num1);
+
+            createProgramIntAnglesSum(num1, RAM);
+
+        case 12:
+            printf("Informe o numero de termos da PA: ");
+            scanf("%lf", &num1);
+
+            printf("Informe o valor do primeiro termo: ");
+            scanf("%lf", &num2);
+
+            printf("Informe o valor do segundo termo: ");
+            scanf("%lf", &num3);
+
+            createProgramAP(num1, num2, num3, RAM);
+
         default:
             break;
         }
     }
+    free(RAM);
     return 0;
 }
