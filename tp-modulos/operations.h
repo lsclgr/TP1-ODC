@@ -13,7 +13,7 @@ void createProgramAP(double n, int a1, int an, double* RAM);
 void createProgramSquareArea(double n, double* RAM);
 void createProgramRectangleArea(double l, double h, double* RAM);
 void createProgramTriangleArea(double l, double h, double* RAM);
+void createProgramCircleArea(double r, double* RAM);
 void createProgramFibonacci(int num1, double* RAM);
-
 
 #endif

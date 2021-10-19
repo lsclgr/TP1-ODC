@@ -1,35 +1,35 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
-#include "machine.h"
+
 #include "basicOperations.h"
+#include "machine.h"
 
 // cores e formato de texto
-#define ANSI_RESET            "\x1b[0m"  // desativa os efeitos anteriores
-#define ANSI_BOLD             "\x1b[1m"  // coloca o texto em negrito
-#define ANSI_COLOR_BLACK      "\x1b[30m"
-#define ANSI_COLOR_RED        "\x1b[31m"
-#define ANSI_COLOR_GREEN      "\x1b[32m"
-#define ANSI_COLOR_YELLOW     "\x1b[33m"
-#define ANSI_COLOR_BLUE       "\x1b[34m"
-#define ANSI_COLOR_MAGENTA    "\x1b[35m"
-#define ANSI_COLOR_CYAN       "\x1b[36m"
-#define ANSI_COLOR_WHITE      "\x1b[37m"
+#define ANSI_RESET "\x1b[0m"  // desativa os efeitos anteriores
+#define ANSI_BOLD "\x1b[1m"   // coloca o texto em negrito
+#define ANSI_COLOR_BLACK "\x1b[30m"
+#define ANSI_COLOR_RED "\x1b[31m"
+#define ANSI_COLOR_GREEN "\x1b[32m"
+#define ANSI_COLOR_YELLOW "\x1b[33m"
+#define ANSI_COLOR_BLUE "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN "\x1b[36m"
+#define ANSI_COLOR_WHITE "\x1b[37m"
 
 // macros para facilitar o uso
-#define BOLD(string)       ANSI_BOLD             string ANSI_RESET
-#define BLACK(string)      ANSI_COLOR_BLACK      string ANSI_RESET
-#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
-#define RED(string)        ANSI_COLOR_RED        string ANSI_RESET
-#define GREEN(string)      ANSI_COLOR_GREEN      string ANSI_RESET
-#define YELLOW(string)     ANSI_COLOR_YELLOW     string ANSI_RESET
-#define BLUE(string)       ANSI_COLOR_BLUE       string ANSI_RESET
-#define MAGENTA(string)    ANSI_COLOR_MAGENTA    string ANSI_RESET
-#define CYAN(string)       ANSI_COLOR_CYAN       string ANSI_RESET
-#define WHITE(string)      ANSI_COLOR_WHITE      string ANSI_RESET
+#define BOLD(string) ANSI_BOLD string ANSI_RESET
+#define BLACK(string) ANSI_COLOR_BLACK string ANSI_RESET
+#define BLUE(string) ANSI_COLOR_BLUE string ANSI_RESET
+#define RED(string) ANSI_COLOR_RED string ANSI_RESET
+#define GREEN(string) ANSI_COLOR_GREEN string ANSI_RESET
+#define YELLOW(string) ANSI_COLOR_YELLOW string ANSI_RESET
+#define BLUE(string) ANSI_COLOR_BLUE string ANSI_RESET
+#define MAGENTA(string) ANSI_COLOR_MAGENTA string ANSI_RESET
+#define CYAN(string) ANSI_COLOR_CYAN string ANSI_RESET
+#define WHITE(string) ANSI_COLOR_WHITE string ANSI_RESET
 
 void createProgramExponential(double base, double exponent, double* RAM) {
-
     // 2^4 = 2 x 2 x 2 x 2 => 4 vezes
     // opcode | add1 | add2 | add3
 
@@ -43,7 +43,6 @@ void createProgramExponential(double base, double exponent, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     if (base < 0) {
-
         inst.opCode = 3;
         inst.addressOne = -1;
         inst.addressTwo = 700;
@@ -74,25 +73,22 @@ void createProgramExponential(double base, double exponent, double* RAM) {
         inst.addressOne = 1;
         inst.addressTwo = 1;
         inst.addressThree = -1;
-        //base na RAM[0]
+        // base na RAM[0]
         interpretedMachine(&inst, RAM);
-    }
-    else {
+    } else {
         inst.opCode = 2;
         inst.addressOne = base;
         inst.addressTwo = 0;
         inst.addressThree = -1;
-        //base na RAM[0]
+        // base na RAM[0]
         interpretedMachine(&inst, RAM);
 
         inst.opCode = 2;
         inst.addressOne = 1;
         inst.addressTwo = 1;
         inst.addressThree = -1;
-        //base na RAM[1]
+        // base na RAM[1]
         interpretedMachine(&inst, RAM);
-
-
 
         for (int i = 1; i < exponent + 1; i++) {
             createProgramMultiply(inst.addressOne, base, RAM);
@@ -108,7 +104,6 @@ void createProgramExponential(double base, double exponent, double* RAM) {
     }
 
     if ((int)exponent % 2 != 0 && baseConvert < 0) {
-
         createProgramSum(inst.addressOne, inst.addressOne, RAM);
 
         inst.opCode = 3;
@@ -126,11 +121,17 @@ void createProgramExponential(double base, double exponent, double* RAM) {
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
         result = inst.addressOne;
-
     }
 
-    printf(CYAN(BOLD("\nO resultado de %.2lf elevado a %.0lf é: %.0lf"))"\n\n", realBase, exponent, result);
+    inst.opCode = 2;
+    inst.addressOne = result;
+    inst.addressTwo = 2;
+    inst.addressThree = -1;
+    // base na RAM[1]
+    interpretedMachine(&inst, RAM);
 
+    printf(CYAN(BOLD("\nO resultado de %.2lf elevado a %.0lf é: %.0lf")) "\n\n",
+           realBase, exponent, result);
 }
 
 void createProgramDelta(double a, double b, double c, double* RAM) {
@@ -152,21 +153,21 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressTwo = 10;
     inst.addressThree = -1;
     deltaInstructions[0] = inst;
-    //a na RAM[10]
+    // a na RAM[10]
 
     inst.opCode = 2;
     inst.addressOne = b;
     inst.addressTwo = 11;
     inst.addressThree = -1;
     deltaInstructions[1] = inst;
-    //b na RAM[11]
+    // b na RAM[11]
 
     inst.opCode = 2;
     inst.addressOne = c;
     inst.addressTwo = 12;
     inst.addressThree = -1;
     deltaInstructions[2] = inst;
-    //c na RAM[12]
+    // c na RAM[12]
 
     createProgramExponential(b, 2, RAM);
 
@@ -182,7 +183,7 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressTwo = 13;
     inst.addressThree = -1;
     deltaInstructions[3] = inst;
-    //b² na RAM[13]
+    // b² na RAM[13]
 
     createProgramMultiply(4, a, RAM);
 
@@ -198,7 +199,7 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressTwo = 14;
     inst.addressThree = -1;
     deltaInstructions[4] = inst;
-    //4xa na RAM[4]
+    // 4xa na RAM[4]
 
     createProgramMultiply(n, c, RAM);
 
@@ -214,14 +215,14 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressTwo = 14;
     inst.addressThree = -1;
     deltaInstructions[5] = inst;
-    //4xaxc na RAM[5]
+    // 4xaxc na RAM[5]
 
     inst.opCode = 1;
     inst.addressOne = 13;
     inst.addressTwo = 14;
     inst.addressThree = 15;
     deltaInstructions[8] = inst;
-    //subtraindo b²-(4ac)
+    // subtraindo b²-(4ac)
 
     // inserindo a ultima instrucao do programa que faz o HALT
     inst.opCode = -1;
@@ -239,14 +240,14 @@ void createProgramDelta(double a, double b, double c, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf(CYAN(BOLD("\nO resultado de delta é: %.2lf"))"\n\n", inst.addressOne);
+    printf(CYAN(BOLD("\nO resultado de delta é: %.2lf")) "\n\n",
+           inst.addressOne);
     free(deltaInstructions);
 }
 
 void createProgramFactorial(double number, double* RAM) {
-
-    //5! = 5 . 4 . 3 . 2 . 1 = 120
-    // opcode | add1 | add2 | add3
+    // 5! = 5 . 4 . 3 . 2 . 1 = 120
+    //  opcode | add1 | add2 | add3
 
     Instruction* factorialInstruction = malloc((5) * sizeof(Instruction));
 
@@ -291,7 +292,6 @@ void createProgramFactorial(double number, double* RAM) {
     machine(factorialInstruction, RAM);
 
     for (int i = (number - 1); i > 0; i--) {
-
         inst.opCode = 3;
         inst.addressOne = -1;
         inst.addressTwo = 0;
@@ -335,8 +335,8 @@ void createProgramFactorial(double number, double* RAM) {
 }
 
 void createProgramSquareRoot(double number, double* RAM) {
-
-    double precision = 0.000001, initNumb, comparation, divResult, numberDiv2, numberDiv22;
+    double precision = 0.000001, initNumb, comparation, divResult, numberDiv2,
+           numberDiv22;
 
     Instruction* sqrtInstruction = malloc((4) * sizeof(Instruction));
 
@@ -347,21 +347,21 @@ void createProgramSquareRoot(double number, double* RAM) {
     inst.addressTwo = 104;
     inst.addressThree = -1;
     sqrtInstruction[2] = inst;
-    //Levar para a RAM[104]
+    // Levar para a RAM[104]
 
     inst.opCode = 2;
     inst.addressOne = number;
     inst.addressTwo = 100;
     inst.addressThree = -1;
     sqrtInstruction[0] = inst;
-    //Levar para a RAM[100]
+    // Levar para a RAM[100]
 
     inst.opCode = 2;
     inst.addressOne = 1;
     inst.addressTwo = 102;
     inst.addressThree = -1;
     sqrtInstruction[1] = inst;
-    //Levar para a RAM[102]
+    // Levar para a RAM[102]
 
     inst.opCode = -1;
     inst.addressOne = -1;
@@ -377,7 +377,7 @@ void createProgramSquareRoot(double number, double* RAM) {
     inst.addressTwo = 102;
     inst.addressThree = 103;
     interpretedMachine(&inst, RAM);
-    //sub para a comparação
+    // sub para a comparação
 
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -385,10 +385,9 @@ void createProgramSquareRoot(double number, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     comparation = inst.addressOne;
-    //trazer da RAM[103]
+    // trazer da RAM[103]
 
     while (comparation >= precision) {
-
         inst.opCode = 0;
         inst.addressOne = 102;
         inst.addressTwo = 100;
@@ -401,7 +400,7 @@ void createProgramSquareRoot(double number, double* RAM) {
         inst.addressTwo = 106;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
-        //trazer RAM[106]
+        // trazer RAM[106]
 
         createProgramDivide(inst.addressOne, 2, RAM);
 
@@ -411,7 +410,7 @@ void createProgramSquareRoot(double number, double* RAM) {
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
         divResult = inst.addressOne;
-        //trazer result da div RAM[3]
+        // trazer result da div RAM[3]
 
         inst.opCode = 2;
         inst.addressOne = divResult;
@@ -436,7 +435,7 @@ void createProgramSquareRoot(double number, double* RAM) {
         numberDiv22 = inst.addressOne;
         printf("\n\n%lf\n\n", numberDiv22);
 
-        //trazendo RAM[100]
+        // trazendo RAM[100]
 
         createProgramDivide(numberDiv2, numberDiv22, RAM);
 
@@ -446,21 +445,21 @@ void createProgramSquareRoot(double number, double* RAM) {
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
         divResult = inst.addressOne;
-        //trazer result da div RAM[3]
+        // trazer result da div RAM[3]
 
         inst.opCode = 2;
         inst.addressOne = divResult;
         inst.addressTwo = 102;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
-        //levar para RAM[102]
+        // levar para RAM[102]
 
         inst.opCode = 1;
         inst.addressOne = 100;
         inst.addressTwo = 102;
         inst.addressThree = 103;
         interpretedMachine(&inst, RAM);
-        //sub para a comparação
+        // sub para a comparação
 
         inst.opCode = 3;
         inst.addressOne = -1;
@@ -468,8 +467,7 @@ void createProgramSquareRoot(double number, double* RAM) {
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
         comparation = inst.addressOne;
-        //trazer da RAM[103]
-
+        // trazer da RAM[103]
     }
 
     inst.opCode = 3;
@@ -486,18 +484,16 @@ void createProgramSquareRoot(double number, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
 
-    printf(MAGENTA("\nA raiz quadrada de %.0lf é: %.2lf\n\n"), initNumb, inst.addressOne);
+    printf(MAGENTA("\nA raiz quadrada de %.0lf é: %.2lf\n\n"), initNumb,
+           inst.addressOne);
 }
 
 void createProgramSquareRoot2(double number, double* RAM) {
-
-
     Instruction inst;
 
     double x = 0;
 
     for (int i = 0; number > 0; i += 2) {
-
         inst.opCode = 2;
         inst.addressOne = number;
         inst.addressTwo = 400;
@@ -516,7 +512,6 @@ void createProgramSquareRoot2(double number, double* RAM) {
         inst.addressThree = 403;
         interpretedMachine(&inst, RAM);
 
-
         inst.opCode = 3;
         inst.addressOne = -1;
         inst.addressTwo = 403;
@@ -524,20 +519,17 @@ void createProgramSquareRoot2(double number, double* RAM) {
         interpretedMachine(&inst, RAM);
         number = inst.addressOne;
 
-
         inst.opCode = 2;
         inst.addressOne = x;
         inst.addressTwo = 400;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
 
-
         inst.opCode = 2;
         inst.addressOne = 1;
         inst.addressTwo = 401;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
-
 
         inst.opCode = 0;
         inst.addressOne = 400;
@@ -545,25 +537,20 @@ void createProgramSquareRoot2(double number, double* RAM) {
         inst.addressThree = 403;
         interpretedMachine(&inst, RAM);
 
-
         inst.opCode = 3;
         inst.addressOne = -1;
         inst.addressTwo = 403;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
         x = inst.addressOne;
-
     }
 
     if (number < 0) {
-
         inst.opCode = 2;
         inst.addressOne = x;
         inst.addressTwo = 400;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
-
-
 
         inst.opCode = 2;
         inst.addressOne = 1;
@@ -571,15 +558,11 @@ void createProgramSquareRoot2(double number, double* RAM) {
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
 
-
-
         inst.opCode = 1;
         inst.addressOne = 400;
         inst.addressTwo = 401;
         inst.addressThree = 403;
         interpretedMachine(&inst, RAM);
-
-
 
         inst.opCode = 3;
         inst.addressOne = -1;
@@ -588,15 +571,9 @@ void createProgramSquareRoot2(double number, double* RAM) {
         interpretedMachine(&inst, RAM);
         x = inst.addressOne;
 
-
-
         printf("resultado da raiz quadrada e %lf\n\n", x);
     }
-
 }
-
-
-
 
 void createProgramBhaskara(double a, double b, double c, double* RAM) {
     Instruction* bhaskaraInstructions = malloc((10) * sizeof(Instruction));
@@ -608,21 +585,21 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
     inst.addressTwo = 200;
     inst.addressThree = -1;
     bhaskaraInstructions[0] = inst;
-    //a na RAM[10]
+    // a na RAM[10]
 
     inst.opCode = 2;
     inst.addressOne = -(b);
     inst.addressTwo = 201;
     inst.addressThree = -1;
     bhaskaraInstructions[1] = inst;
-    //b na RAM[201]
+    // b na RAM[201]
 
     inst.opCode = 2;
     inst.addressOne = c;
     inst.addressTwo = 202;
     inst.addressThree = -1;
     bhaskaraInstructions[2] = inst;
-    //c na RAM[202]
+    // c na RAM[202]
 
     inst.opCode = -1;
     inst.addressOne = -1;
@@ -656,7 +633,7 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
     inst.addressTwo = 203;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    //2xa na RAM[203]
+    // 2xa na RAM[203]
 
     createProgramDelta(a, b, c, RAM);
 
@@ -673,7 +650,7 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
     inst.addressTwo = 204;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    //delta na RAM[204]
+    // delta na RAM[204]
 
     if (delta >= 0) {
         createProgramSquareRoot2(delta, RAM);
@@ -692,7 +669,7 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
         inst.addressTwo = 205;
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
-        //raiz na RAM[205]
+        // raiz na RAM[205]
 
         inst.opCode = 0;
         inst.addressOne = 201;
@@ -707,8 +684,6 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
         inst.addressThree = 207;
         interpretedMachine(&inst, RAM);
         //-b-raiz(delta) na RAM[207]
-
-
 
         // trazer da RAM[206]
         inst.opCode = 3;
@@ -728,7 +703,7 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
         interpretedMachine(&inst, RAM);
         x1 = inst.addressOne;
 
-        //x1 na RAM[206]
+        // x1 na RAM[206]
         inst.opCode = 2;
         inst.addressOne = x1;
         inst.addressTwo = 206;
@@ -753,7 +728,7 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
         interpretedMachine(&inst, RAM);
         x2 = inst.addressOne;
 
-        //x2 na RAM[207]
+        // x2 na RAM[207]
         inst.opCode = 2;
         inst.addressOne = x2;
         inst.addressTwo = 207;
@@ -762,19 +737,18 @@ void createProgramBhaskara(double a, double b, double c, double* RAM) {
 
         if (delta == 0) {
             printf("O resultado de x é: %.1lf", x1);
+        } else {
+            printf("O resultado de x1 é: %.1lf\nO resultado de x2 é: %.1lf\n",
+                   x1, x2);
         }
-        else {
-            printf("O resultado de x1 é: %.1lf\nO resultado de x2 é: %.1lf\n", x1, x2);
-        }
-    }
-    else {
+    } else {
         printf("\nNão é possível calcular bhaskara!\n");
     }
     free(bhaskaraInstructions);
 }
 
 void createProgramIntAnglesSum(double n, double* RAM) {
-    //s=(n-1)x180
+    // s=(n-1)x180
 
     Instruction inst;
 
@@ -783,21 +757,21 @@ void createProgramIntAnglesSum(double n, double* RAM) {
     inst.addressTwo = 250;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    //n na RAM[250]
+    // n na RAM[250]
 
     inst.opCode = 2;
     inst.addressOne = 2;
     inst.addressTwo = 251;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    //n na RAM[250]
+    // n na RAM[250]
 
     inst.opCode = 1;
     inst.addressOne = 250;
     inst.addressTwo = 251;
     inst.addressThree = 252;
     interpretedMachine(&inst, RAM);
-    //n-2 na RAM[251]
+    // n-2 na RAM[251]
 
     inst.opCode = 3;
     inst.addressOne = -1;
@@ -815,8 +789,8 @@ void createProgramIntAnglesSum(double n, double* RAM) {
     interpretedMachine(&inst, RAM);
     result = inst.addressOne;
 
-    printf("\nA soma dos angulos internos do polígono de %.0lf lados é: %.0lf ", n, result);
-
+    printf("\nA soma dos angulos internos do polígono de %.0lf lados é: %.0lf ",
+           n, result);
 }
 
 void createProgramAP(double n, int a1, int an, double* RAM) {
@@ -831,28 +805,28 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
     inst.addressTwo = 300;
     inst.addressThree = -1;
     apInstructions[0] = inst;
-    //n na RAM[300]
+    // n na RAM[300]
 
     inst.opCode = 2;
     inst.addressOne = a1;
     inst.addressTwo = 301;
     inst.addressThree = -1;
     apInstructions[1] = inst;
-    //a1 na RAM[301]
+    // a1 na RAM[301]
 
     inst.opCode = 2;
     inst.addressOne = an;
     inst.addressTwo = 302;
     inst.addressThree = -1;
     apInstructions[2] = inst;
-    //n na RAM[302]
+    // n na RAM[302]
 
     inst.opCode = 0;
     inst.addressOne = 301;
     inst.addressTwo = 302;
     inst.addressThree = 303;
     apInstructions[3] = inst;
-    //a1+an na RAM[303]
+    // a1+an na RAM[303]
 
     createProgramDivide(n, 2, RAM);
 
@@ -862,21 +836,21 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     double resultDiv = inst.addressOne;
-    //pegar result divisão
+    // pegar result divisão
 
     inst.opCode = 2;
     inst.addressOne = resultDiv;
     inst.addressTwo = 304;
     inst.addressThree = -1;
     apInstructions[4] = inst;
-    //n/2 na RAM[304]
+    // n/2 na RAM[304]
 
     inst.opCode = -1;
     inst.addressOne = -1;
     inst.addressTwo = -1;
     inst.addressThree = -1;
     apInstructions[5] = inst;
-    //HALT
+    // HALT
 
     machine(apInstructions, RAM);
 
@@ -886,7 +860,7 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     double resultSum = inst.addressOne;
-    //pegar result soma
+    // pegar result soma
 
     createProgramMultiply(resultDiv, resultSum, RAM);
 
@@ -896,14 +870,14 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
     double result = inst.addressOne;
-    //pegar result multiply
+    // pegar result multiply
 
     inst.opCode = 2;
     inst.addressOne = result;
     inst.addressTwo = 305;
     inst.addressThree = -1;
     interpretedMachine(&inst, RAM);
-    //resultado na RAM[305]
+    // resultado na RAM[305]
 
     printf("\nO resultado da soma da PA é: %.2lf\n", result);
 
@@ -911,7 +885,6 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
 }
 
 void createProgramSquareArea(double n, double* RAM) {
-
     Instruction inst;
 
     inst.opCode = 2;
@@ -1017,6 +990,61 @@ void createProgramTriangleArea(double l, double h, double* RAM) {
     interpretedMachine(&inst, RAM);
 
     printf(YELLOW("\nA área do triângulo é: %.2lf\n\n"), area);
+}
+
+void createProgramCircleArea(double r, double* RAM) {
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = r;
+    inst.addressTwo = 55;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 2;
+    inst.addressOne = 3.1415;
+    inst.addressTwo = 56;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    createProgramExponential(r, 2, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 2;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double area = inst.addressOne;
+
+    inst.opCode = 2;
+    inst.addressOne = area;
+    inst.addressTwo = 57;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 56;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double pi = inst.addressOne;
+
+    createProgramMultiply(pi, area, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    area = inst.addressOne;
+
+    inst.opCode = 2;
+    inst.addressOne = area;
+    inst.addressTwo = 57;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    printf(YELLOW("\nA área do circulo é: %.2lf\n\n"), area);
 }
 
 void createProgramFibonacci(int num1, double* RAM) {
@@ -1149,4 +1177,3 @@ void createProgramFibonacci(int num1, double* RAM) {
     printf("\n\n");
     free(fibonacciInstructions);
 }
-
