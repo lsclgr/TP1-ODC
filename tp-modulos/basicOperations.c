@@ -254,12 +254,26 @@ void createProgramMultiply(double multiplicand, double multiplier, double* RAM) 
         inst.addressThree = -1;
         interpretedMachine(&inst, RAM);
 
-
+        inst.opCode = 2;
+        inst.addressOne = inst.addressOne;
+        inst.addressTwo = 1;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
 
     }
 
+    // trazer da RAM[1]
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+
+
     printf(BLUE("\nMultiplicando %.2lf e %.2lf e gerando: %.2lf")"\n\n", multiplicand, multiplier, inst.addressOne);
 }
+
 
 void createProgramDivide(double dividend, double divisor, double* RAM) {
     // 0 => somar
@@ -576,7 +590,12 @@ void createProgramDivide(double dividend, double divisor, double* RAM) {
 
     }
 
-
+    // levar para a RAM[500]
+    inst.opCode = 2;
+    inst.addressOne = divResult;
+    inst.addressTwo = 500;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
 
 
 
