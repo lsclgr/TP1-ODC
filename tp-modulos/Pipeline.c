@@ -1,4 +1,3 @@
-#include "machine.h"
 #include "Pipeline.h"
 
 #include <stdio.h>
@@ -6,6 +5,7 @@
 #include <string.h>
 #include <time.h>
 #define MAX_VALUE 100000
+#define null -2
 
 #define ANSI_RESET "\x1b[0m"  // desativa os efeitos anteriores
 #define ANSI_COLOR_RED "\x1b[31m"
@@ -13,64 +13,24 @@
 #define RED(string) ANSI_COLOR_RED string ANSI_RESET
 #define GREEN(string) ANSI_COLOR_GREEN string ANSI_RESET
 
-double* createRAM(double* RAM) {
-    RAM = (double*)malloc(1000 * sizeof(double));
-
-    for (int i = 0; i < 1000; i++) {
-        RAM[i] = rand() % 100;
-    }
-    return RAM;
-}
-
-void createRandomInstructions(double* RAM) {
-    // 01|22|13|45 => isto é uma instrução
-    // 00|33|12|01 => isto é outra instrução
-
-    // 0 => opcode => somar
-    // 1 => opcode => subtrair
-    //-1 => halt -> parar
-    Instruction* instructions = malloc(100 * sizeof(Instruction));
-    Instruction inst;
-
-    for (int i = 0; i < 99; i++) {
-        inst.opCode = rand() % 2;
-        inst.addressOne = rand() % 1000;
-        inst.addressTwo = rand() % 1000;
-        inst.addressThree = rand() % 1000;
-        instructions[i] = inst;
-    }
-    inst.opCode = -1;
-    inst.addressOne = -1;
-    inst.addressTwo = -1;
-    inst.addressThree = -1;
-    instructions[99] = inst;
-
-    machine(instructions, RAM);
-    free(instructions);
-}
-Instruction* toCompile(Instruction* instructions) {
-    // aqui teria o q o GCC faz, que demorou décadas para ser feito
-    // eficientemente
-    return instructions;
-}
-
-void machine(Instruction* instructions, double* RAM) {
-
-    Instruction* compiledInstructions = malloc(100 * sizeof(Instruction));
-    compiledInstructions = toCompile(instructions);
-
-    int PC = 0, opcode = MAX_VALUE;
-
-    while (opcode != -1) {
-        Instruction inst = load(compiledInstructions, PC);
-        opcode = decode(inst);
-        execute(&inst, opcode, RAM);
-        PC++;
+Instruction load(Instruction* compiledInstructions, int PC) {
+    if (PC >= 0) {
+        return compiledInstructions[PC];
+    } else {
+        compiledInstructions[PC].opCode = null;
+        return compiledInstructions[PC];
     }
 }
 
-void interpretedMachine(Instruction* inst, double* RAM) {
-    int opcode = inst->opCode;
+int decode(Instruction inst) {
+    if (inst.opCode != null) {
+        return inst.opCode;
+    } else {
+        return -1;
+    }
+}
+
+void execute(Instruction* inst, int opcode, double* RAM) {
     switch (opcode) {
             // SOMAR
         case 0: {
