@@ -18,7 +18,7 @@
 
 int main() {
     srand(time(NULL));
-    int op = MAX_VALUE;
+    int op = MAX_VALUE, num;
     double* RAM = NULL, num1, num2, num3;
     RAM = createRAM(RAM);
 
@@ -33,11 +33,15 @@ int main() {
             "4 - Divisão\n"
             "5 - Potenciação\n"
             "6 - Delta\n"
+            "7 - Fibonacci\n"
             "8 - Fatorial\n"
             "9 - Raiz quadrada\n"
             "10- Bhaskara\n"
             "11- Soma dos angulos internos\n"
             "12- Progressão aritmética\n"
+            "13- Area do quadrado\n"
+            "14- Area do retangulo\n"
+            "15- Area do triangulo\n"
             "0 - SAIR\n")));
         scanf("%d", &op);
         switch (op)
@@ -109,7 +113,13 @@ int main() {
             createProgramDelta(num1, num2, num3, RAM);
 
             break;
+        case 7:
+            printf("Informe o número de termos da sequencia: ");
+            scanf("%d", &num);
 
+            createProgramFibonacci(num, RAM);
+
+            break;
         case 8:
             printf("Informe o número que você deseja saber o fatorial: ");
             scanf("%lf", &num1);
@@ -159,6 +169,33 @@ int main() {
             scanf("%lf", &num3);
 
             createProgramAP(num1, num2, num3, RAM);
+
+            break;
+        case 13:
+            printf("Informe o lado do quadrado: ");
+            scanf("%lf", &num1);
+
+            createProgramSquareArea(num1, RAM);
+
+            break;
+        case 14:
+            printf("Informe a base do retangulo: ");
+            scanf("%lf", &num1);
+
+            printf("Informe a altura do retangulo: ");
+            scanf("%lf", &num2);
+
+            createProgramRectangleArea(num1, num2, RAM);
+
+            break;
+        case 15:
+            printf("Informe a base do triangulo: ");
+            scanf("%lf", &num1);
+
+            printf("Informe a altura do triangulo: ");
+            scanf("%lf", &num2);
+
+            createProgramTriangleArea(num1, num2, RAM);
 
             break;
 

@@ -789,3 +789,247 @@ void createProgramAP(double n, int a1, int an, double* RAM) {
 
     free(apInstructions);
 }
+
+void createProgramSquareArea(double n, double* RAM) {
+
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = n;
+    inst.addressTwo = 30;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    createProgramMultiply(n, n, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double area = inst.addressOne;
+
+    inst.opCode = 2;
+    inst.addressOne = area;
+    inst.addressTwo = 31;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    printf(YELLOW("\nA área do quadrado é: %.2lf\n\n"), area);
+}
+
+void createProgramRectangleArea(double l, double h, double* RAM) {
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = l;
+    inst.addressTwo = 40;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 2;
+    inst.addressOne = h;
+    inst.addressTwo = 41;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    createProgramMultiply(l, h, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double area = inst.addressOne;
+
+    inst.opCode = 2;
+    inst.addressOne = area;
+    inst.addressTwo = 42;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    printf(YELLOW("\nA área do retângulo é: %.2lf\n\n"), area);
+}
+
+void createProgramTriangleArea(double l, double h, double* RAM) {
+    Instruction inst;
+
+    inst.opCode = 2;
+    inst.addressOne = l;
+    inst.addressTwo = 50;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    inst.opCode = 2;
+    inst.addressOne = h;
+    inst.addressTwo = 51;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    createProgramMultiply(l, h, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 1;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    double area = inst.addressOne;
+
+    inst.opCode = 2;
+    inst.addressOne = area;
+    inst.addressTwo = 52;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    createProgramDivide(area, 2, RAM);
+
+    inst.opCode = 3;
+    inst.addressOne = -1;
+    inst.addressTwo = 500;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+    area = inst.addressOne;
+
+    inst.opCode = 2;
+    inst.addressOne = area;
+    inst.addressTwo = 52;
+    inst.addressThree = -1;
+    interpretedMachine(&inst, RAM);
+
+    printf(YELLOW("\nA área do triângulo é: %.2lf\n\n"), area);
+}
+
+void createProgramFibonacci(int num1, double* RAM) {
+    int count;
+    int fibonacci[num1];
+    fibonacci[0] = 0;
+    fibonacci[1] = 1;
+
+    Instruction* fibonacciInstructions = malloc((5) * sizeof(Instruction));
+
+    for (count = 2; count < num1; count++) {
+        // Basicamente fibo = n - 1 + n - 2. e é.
+        // Começo do n-1.
+        Instruction inst;
+        // Levando count pra posiçao 2
+        inst.opCode = 2;
+        inst.addressOne = count;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        fibonacciInstructions[0] = inst;
+
+        // Levando 1 pra posiçao 3
+        inst.opCode = 2;
+        inst.addressOne = 1;
+        inst.addressTwo = 3;
+        inst.addressThree = -1;
+        fibonacciInstructions[1] = inst;
+
+        // Subtraindo count com 1
+        inst.opCode = 1;
+        inst.addressOne = 2;
+        inst.addressTwo = 3;
+        inst.addressThree = 3;
+        fibonacciInstructions[2] = inst;
+
+        // HALT
+        inst.opCode = -1;
+        inst.addressOne = -1;
+        inst.addressTwo = -1;
+        inst.addressThree = -1;
+        fibonacciInstructions[3] = inst;
+
+        machine(fibonacciInstructions, RAM);
+
+        // Trazendo o resultado da RAM
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 3;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        int subOne = inst.addressOne;
+
+        // Começo do n -2.
+        inst.opCode = 2;
+        inst.addressOne = count;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        fibonacciInstructions[0] = inst;
+
+        // Armazenando 2 na posição 3
+        inst.opCode = 2;
+        inst.addressOne = 2;
+        inst.addressTwo = 3;
+        inst.addressThree = -1;
+        fibonacciInstructions[1] = inst;
+
+        // subtraindo o contador por 2
+        inst.opCode = 1;
+        inst.addressOne = 2;
+        inst.addressTwo = 3;
+        inst.addressThree = 3;
+        fibonacciInstructions[2] = inst;
+
+        // HALT
+        inst.opCode = -1;
+        inst.addressOne = -1;
+        inst.addressTwo = -1;
+        inst.addressThree = -1;
+        fibonacciInstructions[3] = inst;
+
+        machine(fibonacciInstructions, RAM);
+
+        // Trazendo da RAM
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 3;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+        int subTwo = inst.addressOne;
+
+        inst.opCode = 2;
+        inst.addressOne = subOne;
+        inst.addressTwo = 2;
+        inst.addressThree = -1;
+        fibonacciInstructions[0] = inst;
+
+        inst.opCode = 2;
+        inst.addressOne = subTwo;
+        inst.addressTwo = 3;
+        inst.addressThree = -1;
+        fibonacciInstructions[1] = inst;
+
+        inst.opCode = 0;
+        inst.addressOne = 2;
+        inst.addressTwo = 3;
+        inst.addressThree = 3;
+        fibonacciInstructions[2] = inst;
+
+        // HALT
+        inst.opCode = -1;
+        inst.addressOne = -1;
+        inst.addressTwo = -1;
+        inst.addressThree = -1;
+        fibonacciInstructions[3] = inst;
+
+        machine(fibonacciInstructions, RAM);
+
+        inst.opCode = 3;
+        inst.addressOne = -1;
+        inst.addressTwo = 3;
+        inst.addressThree = -1;
+        interpretedMachine(&inst, RAM);
+
+        fibonacci[count] = inst.addressOne;
+    }
+    printf("\n\n");
+    for (int i = 0; i < num1; i++) {
+        printf("%d ", fibonacci[i]);
+    }
+    printf("\n\n");
+    free(fibonacciInstructions);
+}
+
+void createProgramPitagoras(double a, double b, double c, double* RAM){
+    
+}
